@@ -1,10 +1,9 @@
-import React from 'react';
+import Login from './pages/Login.tsx';
 
 function App() {
   return (
-    <div className="app-container">
-      <h1>Crash2Cost</h1>
-      <p>Frontend is running!</p>
+    <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+      <Login />
     </div>
   );
 }
