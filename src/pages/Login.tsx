@@ -5,7 +5,8 @@ import { Button, Input } from '../components/common';
 import { User, Lock, AlertCircle } from 'lucide-react';
 import type { AuthResponse } from '../types';
 import styles from './Login.module.css';
-import { API_ROUTES, ERRORS } from '../components/common/constants/constants';
+import { API_ROUTES, ERRORS, UI_TEXT } from '../components/common/constants/constants';
+import { Link } from 'react-router-dom';
 
 const Login: React.FC = () => {
   const { login } = useAuth();
@@ -35,8 +36,8 @@ const Login: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <h2 className={styles.title}>Welcome Back</h2>
-          <p className={styles.subtitle}>Sign in to access your dashboard</p>
+          <h2 className={styles.title}>{UI_TEXT.LOGIN.TITLE}</h2>
+          <p className={styles.subtitle}>{UI_TEXT.LOGIN.SUBTITLE}</p>
         </div>
 
         {error && (
@@ -67,9 +68,16 @@ const Login: React.FC = () => {
           />
 
           <Button type="submit" isLoading={loading} className={styles.submitButton}>
-            Sign In
+            {UI_TEXT.LOGIN.BUTTON}
           </Button>
         </form>
+
+        <div className={styles.footer}>
+          Don't have an account?
+          <Link to="/signup" className={styles.signupLink}>
+            Sign Up
+          </Link>
+        </div>
       </div>
     </div>
   );
