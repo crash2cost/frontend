@@ -93,15 +93,108 @@
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 3rem;
-  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.section {
+  width: 100%;
+}
+
+.sectionHeader {
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  color: var(--text-main);
+  margin: 0 0 0.5rem 0;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.5rem;
+}
+
+.sectionSubtitle {
+  color: var(--text-muted);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.uploadingMessage {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(96, 165, 250, 0.1);
+  border-radius: 8px;
+  color: var(--accent-blue);
+  font-weight: 500;
+  margin-top: 1rem;
+}
+
+.imageGallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.galleryItem {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.galleryItem:hover {
+  transform: scale(1.03);
+}
+
+.galleryImage {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.imageDetails {
+  padding: 0.75rem;
+  background: var(--bg-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.imageName {
+  font-size: 0.85rem;
+  color: var(--text-main);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.deleteButton {
+  background: #ef4444;
+  border: none;
+  color: white;
+  padding: 0.4rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.deleteButton:hover {
+  background: #dc2626;
 }
 
 .emptyState {
   text-align: center;
   max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem 0;
 }
 
 .emptyIcon {

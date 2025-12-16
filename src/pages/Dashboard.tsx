@@ -1,10 +1,52 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks';
-import { BarChart3, TrendingUp, DollarSign, AlertTriangle } from 'lucide-react';
+import { BarChart3, TrendingUp, DollarSign, AlertTriangle, Upload } from 'lucide-react';
+import { ImageUpload } from '../components/common';
+import type { ImageResponse } from '../api/image.api';
+import { imageApi } from '../api/image.api';
 import styles from './Dashboard.module.css';
 
 const Dashboard: React.FC = () => {
   const { logout } = useAuth();
+  const [uploadedImages, setUploadedImages] = useState<ImageResponse[]>([]);
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    loadImages();
+  }, []);
+
+  const loadImages = async () => {
+    try {
+      const images = await imageApi.getMyImages();
+      setUploadedImages(images);
+    } catch (error) {
+      console.error('Failed to load images:', error);
+    }
+  };
+
+  const handleUpload = async (files: File[]) => {
+    setUploading(true);
+    try {
+      for (const file of files) {
+        await imageApi.uploadImage(file);
+      }
+      await loadImages();
+    } catch (error) {
+      console.error('Failed to upload images:', error);
+      alert('Failed to upload images. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDeleteImage = async (imageId: string) => {
+    try {
+      await imageApi.deleteImage(imageId);
+      await loadImages();
+    } catch (error) {
+      console.error('Failed to delete image:', error);
+    }
+  };
 
   const stats = [
     {
@@ -65,13 +107,63 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div className={styles.content}>
-        <div className={styles.emptyState}>
-          <AlertTriangle size={64} className={styles.emptyIcon} />
-          <h3 className={styles.emptyTitle}>No crashes recorded yet</h3>
-          <p className={styles.emptyText}>
-            Start tracking your crashes to see analytics and cost breakdown
-          </p>
+        <div className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <div>
+              <h2 className={styles.sectionTitle}>
+                <Upload size={24} />
+                Upload Crash Images
+              </h2>
+              <p className={styles.sectionSubtitle}>
+                Upload photos of crashes to keep track of damage and details
+              </p>
+            </div>
+          </div>
+
+          <ImageUpload onUpload={handleUpload} maxFiles={10} maxSizeMB={10} />
+
+          {uploading && (
+            <div className={styles.uploadingMessage}>
+              Uploading images...
+            </div>
+          )}
         </div>
+
+        {uploadedImages.length > 0 && (
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>My Images ({uploadedImages.length})</h2>
+            <div className={styles.imageGallery}>
+              {uploadedImages.map((image) => (
+                <div key={image.id} className={styles.galleryItem}>
+                  <img 
+                    src={imageApi.getImageUrl(image.id)} 
+                    alt={image.filename}
+                    className={styles.galleryImage}
+                  />
+                  <div className={styles.imageDetails}>
+                    <span className={styles.imageName}>{image.filename}</span>
+                    <button 
+                      onClick={() => handleDeleteImage(image.id)}
+                      className={styles.deleteButton}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {uploadedImages.length === 0 && (
+          <div className={styles.emptyState}>
+            <AlertTriangle size={64} className={styles.emptyIcon} />
+            <h3 className={styles.emptyTitle}>No images uploaded yet</h3>
+            <p className={styles.emptyText}>
+              Upload crash images to start documenting incidents
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
