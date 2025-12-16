@@ -1,7 +1,7 @@
 export const API_ROUTES = {
   AUTH: {
-    LOGIN: '/auth/login',
-    SIGNUP: '/auth/signup'
+    LOGIN: '/api/auth/login',
+    SIGNUP: '/api/auth/signup'
   }
 };
 

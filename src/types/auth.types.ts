@@ -1,7 +1,7 @@
 export interface AuthResponse {
-  access_token: string;
-  token_type?: string;
-  expires_in?: number;
+  tokenAccess: string;
+  tokenType?: string;
+  role?: string;
 }
 
 export interface User {

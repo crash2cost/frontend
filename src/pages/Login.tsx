@@ -21,7 +21,7 @@ const Login: React.FC = () => {
 
     try {
       const response = await api.post<AuthResponse>(API_ROUTES.AUTH.LOGIN, credentials);
-      login(response.data.access_token);
+      login(response.data.tokenAccess);
       alert(ERRORS.SUCCESSFUL_LOGIN);
     } catch (err) {
       console.error(err);

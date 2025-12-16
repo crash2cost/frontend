@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../hooks';
 import { api } from '../api';
-import { Button, Input } from '../components/common';
+import { Button, Input, PasswordRequirements } from '../components/common';
 import { User, Lock, Mail, AlertCircle, CheckCircle } from 'lucide-react';
 import type { AuthResponse } from '../types';
 import styles from './SignUp.module.css';
@@ -19,6 +19,7 @@ const SignUp: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showPasswordReqs, setShowPasswordReqs] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +49,7 @@ const SignUp: React.FC = () => {
       
       setSuccess(MESSAGES.SIGNUP_SUCCESS);
       setTimeout(() => {
-        login(response.data.access_token);
+        login(response.data.tokenAccess);
       }, VALIDATION.SUCCESS_REDIRECT_DELAY);
     } catch (err) {
       console.error(err);
@@ -109,9 +110,13 @@ const SignUp: React.FC = () => {
             placeholder="Create a password"
             value={formData.password}
             onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+            onFocus={() => setShowPasswordReqs(true)}
+            onBlur={() => setShowPasswordReqs(false)}
             required
             minLength={VALIDATION.MIN_PASSWORD_LENGTH}
           />
+
+          <PasswordRequirements password={formData.password} show={showPasswordReqs} />
 
           <Input 
             label="Confirm Password" 
