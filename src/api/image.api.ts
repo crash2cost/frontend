@@ -1,4 +1,17 @@
 import { api } from './axios';
+import {
+  API_BASE_PATHS,
+  API_BASE_URL,
+  API_PATH_SEGMENTS,
+  CONTENT_TYPES,
+  FORM_FIELD_NAMES,
+  HEADER_NAMES,
+} from '../constants/api.constants';
+
+const IMAGES_BASE_PATH = API_BASE_PATHS.images;
+const IMAGES_UPLOAD_PATH = `${IMAGES_BASE_PATH}/${API_PATH_SEGMENTS.upload}`;
+const IMAGES_MY_IMAGES_PATH = `${IMAGES_BASE_PATH}/${API_PATH_SEGMENTS.myImages}`;
+const buildImagePath = (imageId: string) => `${IMAGES_BASE_PATH}/${imageId}`;
 
 export interface ImageResponse {
   id: string;
@@ -11,11 +24,11 @@ export interface ImageResponse {
 export const imageApi = {
   uploadImage: async (file: File): Promise<ImageResponse> => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append(FORM_FIELD_NAMES.imageFile, file);
     
-    const response = await api.post<ImageResponse>('/api/images/upload', formData, {
+    const response = await api.post<ImageResponse>(IMAGES_UPLOAD_PATH, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        [HEADER_NAMES.contentType]: CONTENT_TYPES.multipart,
       },
     });
     
@@ -23,15 +36,15 @@ export const imageApi = {
   },
 
   getMyImages: async (): Promise<ImageResponse[]> => {
-    const response = await api.get<ImageResponse[]>('/api/images/my-images');
+    const response = await api.get<ImageResponse[]>(IMAGES_MY_IMAGES_PATH);
     return response.data;
   },
 
   getImageUrl: (imageId: string): string => {
-    return `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/images/${imageId}`;
+    return `${API_BASE_URL}${buildImagePath(imageId)}`;
   },
 
   deleteImage: async (imageId: string): Promise<void> => {
-    await api.delete(`/api/images/${imageId}`);
+    await api.delete(buildImagePath(imageId));
   },
 };
