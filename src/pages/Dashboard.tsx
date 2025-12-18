@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks';
-import { BarChart3, TrendingUp, DollarSign, AlertTriangle, Upload } from 'lucide-react';
+import { AlertTriangle, Upload, CheckCircle, XCircle, History, Sparkles, Trash2 } from 'lucide-react';
 import { ImageUpload } from '../components/common';
 import type { ImageResponse } from '../api/image.api';
 import { imageApi } from '../api/image.api';
+import { mlApi } from '../api/ml.api';
+import { assessmentApi } from '../api/assessment.api';
+import { reportApi, type DamageReport } from '../api/report.api';
 import styles from './Dashboard.module.css';
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const { logout } = useAuth();
   const [uploadedImages, setUploadedImages] = useState<ImageResponse[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [assessments, setAssessments] = useState<Map<string, DamageReport>>(new Map());
+  const [processing, setProcessing] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadImages();
@@ -19,6 +26,14 @@ const Dashboard: React.FC = () => {
     try {
       const images = await imageApi.getMyImages();
       setUploadedImages(images);
+      
+      // Load existing assessments from report-service
+      const reports = await reportApi.getUserDamageReports();
+      const assessmentMap = new Map<string, DamageReport>();
+      reports.forEach(report => {
+        assessmentMap.set(report.imageId, report);
+      });
+      setAssessments(assessmentMap);
     } catch (error) {
       console.error('Failed to load images:', error);
     }
@@ -39,71 +54,92 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleDeleteImage = async (imageId: string) => {
+  const processImage = async (imageId: string) => {
+    setProcessing(prev => new Set(prev).add(imageId));
     try {
-      await imageApi.deleteImage(imageId);
-      await loadImages();
+      // Generate assessment with ML
+      const assessment = await mlApi.assessDamage(imageId);
+      
+      // Save to database
+      const savedAssessment = await assessmentApi.saveAssessment(assessment);
+      
+      // Update local state
+      setAssessments(prev => new Map(prev).set(imageId, savedAssessment));
     } catch (error) {
-      console.error('Failed to delete image:', error);
+      console.error('Failed to process image:', error);
+      alert('Failed to process image with ML. Please try again.');
+    } finally {
+      setProcessing(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(imageId);
+        return newSet;
+      });
     }
   };
 
-  const stats = [
-    {
-      title: 'Total Crashes',
-      value: '0',
-      icon: AlertTriangle,
-      color: '#f97316',
-      trend: '+0%'
-    },
-    {
-      title: 'Total Cost',
-      value: '₪0',
-      icon: DollarSign,
-      color: '#22c55e',
-      trend: '+0%'
-    },
-    {
-      title: 'This Month',
-      value: '0',
-      icon: BarChart3,
-      color: '#38bdf8',
-      trend: '+0%'
-    },
-    {
-      title: 'Average Cost',
-      value: '₪0',
-      icon: TrendingUp,
-      color: '#a78bfa',
-      trend: '+0%'
+  const handleDeleteOldReports = async () => {
+    if (!confirm('Are you sure you want to delete all reports? This action cannot be undone.')) {
+      return;
     }
-  ];
+    try {
+      await reportApi.deleteAllReports();
+      setAssessments(new Map());
+      alert('All reports deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete reports:', error);
+      alert('Failed to delete reports. Please try again.');
+    }
+  };
+
+  // Calculate totals from assessments
+  const totalAssessed = assessments.size;
+  const totalCost = Array.from(assessments.values()).reduce((sum, a) => sum + a.totalCost, 0);
+  const totalLossCount = Array.from(assessments.values()).filter(a => a.totalLoss).length;
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Dashboard</h1>
+          <h1 className={styles.title}>Crash2Cost</h1>
           <p className={styles.subtitle}>Welcome back! Here's your crash analytics overview</p>
         </div>
-        <button onClick={logout} className={styles.logoutButton}>
-          Logout
-        </button>
+        <div className={styles.headerButtons}>
+          <button onClick={handleDeleteOldReports} className={styles.deleteButton}>
+            <Trash2 size={20} />
+            Delete All Reports
+          </button>
+          <button onClick={() => navigate('/history')} className={styles.historyButton}>
+            <History size={20} />
+            View History
+          </button>
+          <button onClick={logout} className={styles.logoutButton}>
+            Logout
+          </button>
+        </div>
       </div>
 
       <div className={styles.statsGrid}>
-        {stats.map((stat) => (
-          <div key={stat.title} className={styles.statCard}>
-            <div className={styles.statHeader}>
-              <span className={styles.statTitle}>{stat.title}</span>
-              <stat.icon size={24} style={{ color: stat.color }} />
-            </div>
-            <div className={styles.statValue}>{stat.value}</div>
-            <div className={styles.statTrend} style={{ color: stat.color }}>
-              {stat.trend} from last month
-            </div>
+        <div className={styles.statCard}>
+          <div className={styles.statHeader}>
+            <span className={styles.statTitle}>Images Assessed</span>
+            <Upload size={24} style={{ color: '#38bdf8' }} />
           </div>
-        ))}
+          <div className={styles.statValue}>{totalAssessed}</div>
+          <div className={styles.statTrend} style={{ color: '#38bdf8' }}>
+            {uploadedImages.length} total uploaded
+          </div>
+        </div>
+        
+        <div className={styles.statCard}>
+          <div className={styles.statHeader}>
+            <span className={styles.statTitle}>Total Damage Cost</span>
+            <AlertTriangle size={24} style={{ color: '#f97316' }} />
+          </div>
+          <div className={styles.statValue}>₪{totalCost.toLocaleString()}</div>
+          <div className={styles.statTrend} style={{ color: '#f97316' }}>
+            {totalLossCount} total loss cases
+          </div>
+        </div>
       </div>
 
       <div className={styles.content}>
@@ -127,33 +163,108 @@ const Dashboard: React.FC = () => {
               Uploading images...
             </div>
           )}
-        </div>
 
-        {uploadedImages.length > 0 && (
-          <div className={styles.section}>
-            <h2 className={styles.sectionTitle}>My Images ({uploadedImages.length})</h2>
-            <div className={styles.imageGallery}>
-              {uploadedImages.map((image) => (
-                <div key={image.id} className={styles.galleryItem}>
-                  <img 
-                    src={imageApi.getImageUrl(image.id)} 
-                    alt={image.filename}
-                    className={styles.galleryImage}
-                  />
-                  <div className={styles.imageDetails}>
-                    <span className={styles.imageName}>{image.filename}</span>
-                    <button 
-                      onClick={() => handleDeleteImage(image.id)}
-                      className={styles.deleteButton}
-                    >
-                      Delete
-                    </button>
+          {/* Show all assessments */}
+          {uploadedImages.length > 0 && (
+            <div className={styles.assessmentsContainer}>
+              {uploadedImages.map((image) => {
+                const assessment = assessments.get(image.id);
+                const isProcessing = processing.has(image.id);
+
+                return (
+                  <div key={image.id} className={styles.imageCard}>
+                    <img 
+                      src={imageApi.getImageUrl(image.id)} 
+                      alt="Crash damage"
+                      className={styles.damageImage}
+                    />
+
+                    {!assessment && !isProcessing && (
+                      <div className={styles.mlButtonContainer}>
+                        <button 
+                          onClick={() => processImage(image.id)}
+                          className={styles.mlButton}
+                        >
+                          <Sparkles size={20} />
+                          Process with AI
+                        </button>
+                        <p className={styles.mlDescription}>
+                          Click to analyze damage with our ML model
+                        </p>
+                      </div>
+                    )}
+
+                    {isProcessing && (
+                      <div className={styles.processingBox}>
+                        <div className={styles.spinner}></div>
+                        <span>Analyzing damage with AI...</span>
+                      </div>
+                    )}
+
+                    {assessment && (
+                      <div className={styles.resultsBox}>
+                        <div className={styles.resultsHeader}>
+                          <h3 className={styles.resultsTitle}>Damage Assessment Results</h3>
+                          <div className={`${styles.statusBadge} ${assessment.totalLoss ? styles.totalLossBadge : styles.repairableBadge}`}>
+                            {assessment.totalLoss ? (
+                              <>
+                                <XCircle size={18} />
+                                <span>Total Loss</span>
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle size={18} />
+                                <span>Repairable</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className={styles.costSummary}>
+                          <div className={styles.costBox}>
+                            <span className={styles.costLabel}>Total Repair Cost</span>
+                            <span className={styles.costAmount}>₪{assessment.totalCost.toLocaleString()}</span>
+                          </div>
+                        </div>
+
+                        <div className={styles.brokenPartsList}>
+                          <h4 className={styles.partsTitle}>
+                            <AlertTriangle size={20} />
+                            Broken Parts Detected
+                          </h4>
+                          <div className={styles.partsList}>
+                            {assessment.damageAreas.map((damage) => (
+                              <div key={`${image.id}-${damage.area}`} className={styles.partItem}>
+                                <div className={styles.partInfo}>
+                                  <div className={styles.partName}>{damage.area}</div>
+                                  <div className={styles.partDetails}>
+                                    <span className={styles.partDescription}>{damage.description}</span>
+                                    <div className={styles.partMeta}>
+                                      <span className={`${styles.severityBadge} ${styles['severity' + damage.severity]}`}>
+                                        Severity {damage.severity}/5
+                                      </span>
+                                      <span className={styles.partCost}>₪{damage.cost.toLocaleString()}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className={styles.assessmentFooter}>
+                          <span className={styles.assessmentTime}>
+                            Assessed {assessment.assessmentDate ? new Date(assessment.assessmentDate).toLocaleString() : 'Recently'}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {uploadedImages.length === 0 && (
           <div className={styles.emptyState}>
