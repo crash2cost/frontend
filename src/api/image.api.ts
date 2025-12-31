@@ -1,17 +1,15 @@
 import { api } from './axios';
 import {
-  API_BASE_PATHS,
   API_BASE_URL,
-  API_PATH_SEGMENTS,
   CONTENT_TYPES,
   FORM_FIELD_NAMES,
   HEADER_NAMES,
 } from '../constants/api.constants';
-
-const IMAGES_BASE_PATH = API_BASE_PATHS.images;
-const IMAGES_UPLOAD_PATH = `${IMAGES_BASE_PATH}/${API_PATH_SEGMENTS.upload}`;
-const IMAGES_MY_IMAGES_PATH = `${IMAGES_BASE_PATH}/${API_PATH_SEGMENTS.myImages}`;
-const buildImagePath = (imageId: string) => `${IMAGES_BASE_PATH}/${imageId}`;
+import {
+  IMAGES_MY_IMAGES_PATH,
+  IMAGES_UPLOAD_PATH,
+  buildImagePath,
+} from './image.paths';
 
 export interface ImageResponse {
   id: string;

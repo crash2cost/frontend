@@ -1,11 +1,11 @@
 import { api } from './axios';
-import { API_BASE_PATHS, API_MESSAGES, API_PATH_SEGMENTS } from '../constants/api.constants';
-
-const ASSESSMENTS_BASE_PATH = API_BASE_PATHS.assessments;
-const ASSESSMENTS_ALL_PATH = `${ASSESSMENTS_BASE_PATH}/${API_PATH_SEGMENTS.all}`;
-const buildAssessmentPath = (assessmentId: string) => `${ASSESSMENTS_BASE_PATH}/${assessmentId}`;
-const buildAssessmentImagePath = (imageId: string) =>
-  `${ASSESSMENTS_BASE_PATH}/${API_PATH_SEGMENTS.image}/${imageId}`;
+import { API_MESSAGES } from '../constants/api.constants';
+import {
+  ASSESSMENTS_ALL_PATH,
+  ASSESSMENTS_BASE_PATH,
+  buildAssessmentImagePath,
+  buildAssessmentPath
+} from './assessment.paths';
 
 export interface DamageArea {
   area: string;

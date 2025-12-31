@@ -1,10 +1,9 @@
 import { api } from './axios';
-import { API_BASE_PATHS, API_PATH_SEGMENTS } from '../constants/api.constants';
-
-const REPORTS_BASE_PATH = API_BASE_PATHS.reports;
-const REPORTS_ALL_PATH = `${REPORTS_BASE_PATH}/${API_PATH_SEGMENTS.all}`;
-const REPORTS_DAMAGE_ASSESSMENTS_PATH = `${REPORTS_BASE_PATH}/${API_PATH_SEGMENTS.damageAssessments}`;
-const buildReportPath = (reportId: string) => `${REPORTS_BASE_PATH}/${reportId}`;
+import {
+  REPORTS_ALL_PATH,
+  REPORTS_DAMAGE_ASSESSMENTS_PATH,
+  buildReportPath,
+} from './report.paths';
 
 export interface DamageArea {
   area: string;
