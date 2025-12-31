@@ -1,6 +1,6 @@
 export interface DamageArea {
   area: string;
-  severity: number; // 1-5
+  severity: number; 
   cost: number;
   description?: string;
 }

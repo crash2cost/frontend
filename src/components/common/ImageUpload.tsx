@@ -45,7 +45,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     const newImages = [...images, ...validFiles];
     setImages(newImages);
 
-    // Generate previews
+    
     validFiles.forEach(file => {
       const reader = new FileReader();
       reader.onloadend = () => {

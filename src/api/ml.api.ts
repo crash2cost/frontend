@@ -1,14 +1,9 @@
 import type { DamageAssessment } from '../types/damage';
 
-// Mock ML service - replace this with real ML API when ready
 export const mlApi = {
   async assessDamage(imageId: string): Promise<DamageAssessment> {
     try {
-      // TODO: Replace with real ML API call
-      // const response = await axios.post<DamageAssessment>(`${API_URL}/assess`, { imageId });
-      // return response.data;
-      
-      // Mock response for now
+
       return mockAssessDamage(imageId);
     } catch (error) {
       console.error('ML assessment failed:', error);
@@ -17,7 +12,6 @@ export const mlApi = {
   }
 };
 
-// Mock function that simulates ML processing
 function mockAssessDamage(imageId: string): DamageAssessment {
   const mockScenarios = [
     {
@@ -55,7 +49,6 @@ function mockAssessDamage(imageId: string): DamageAssessment {
     }
   ];
 
-  // Randomly select a scenario
   const scenario = mockScenarios[Math.floor(Math.random() * mockScenarios.length)];
 
   return {
