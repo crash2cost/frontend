@@ -1,0 +1,80 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+  width: 100%;
+}
+
+.label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input.withIcon {
+  padding-left: 2.5rem;
+}
+
+.input.withToggle {
+  padding-right: 2.5rem;
+}
+
+.togglePassword {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.togglePassword:hover {
+  color: var(--accent-blue);
+}
+
+.input.hasError {
+  border-color: var(--error-color);
+}
+
+.input:focus {
+  border-color: var(--accent-blue);
+}
+
+.input.hasError:focus {
+  border-color: var(--error-color);
+}
+
+.errorMessage {
+  font-size: 0.8rem;
+  color: var(--error-color);
+}
