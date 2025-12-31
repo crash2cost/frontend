@@ -12,11 +12,26 @@ export interface DamageArea {
   description?: string;
 }
 
+export interface BoundingBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface DamageRegion {
+  part: string;
+  severity: number;
+  bbox: BoundingBox;
+  confidence: number;
+}
+
 export interface DamageReport {
   id?: string;
   username?: string;
   imageId: string;
   damageAreas: DamageArea[];
+  damageRegions?: DamageRegion[];
   totalCost: number;
   totalLoss: boolean;
   assessmentDate?: string;
