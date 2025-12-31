@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { DEFAULT_MAX_FILES, DEFAULT_MAX_SIZE_MB } from './imageUpload.constants';
 import styles from './ImageUpload.module.css';
 
 interface ImageUploadProps {
@@ -10,8 +11,8 @@ interface ImageUploadProps {
 
 export const ImageUpload: React.FC<ImageUploadProps> = ({ 
   onUpload, 
-  maxFiles = 5,
-  maxSizeMB = 5 
+  maxFiles = DEFAULT_MAX_FILES,
+  maxSizeMB = DEFAULT_MAX_SIZE_MB 
 }) => {
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);

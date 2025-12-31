@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
-import type { LucideIcon } from 'lucide-react';
 import { Eye, EyeOff } from 'lucide-react';
 import styles from './Input.module.css';
-
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label: string;
-  icon?: LucideIcon;
-  error?: string;
-}
+import type { InputProps } from './Input.types';
 
 export const Input: React.FC<InputProps> = ({ label, icon: Icon, error, className = '', type, ...props }) => {
   const [showPassword, setShowPassword] = useState(false);

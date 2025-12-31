@@ -1,16 +1,8 @@
 import React from 'react';
 import { Check, X } from 'lucide-react';
 import styles from './PasswordRequirements.module.css';
-
-interface PasswordRequirementsProps {
-  password: string;
-  show?: boolean;
-}
-
-interface Requirement {
-  label: string;
-  test: (password: string) => boolean;
-}
+import type { PasswordRequirementsProps } from './PasswordRequirements.types';
+import type { Requirement } from './PasswordRequirementsRequirement.types';
 
 const requirements: Requirement[] = [
   {

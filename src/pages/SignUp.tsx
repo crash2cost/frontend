@@ -7,10 +7,11 @@ import type { AuthResponse } from '../types';
 import styles from './SignUp.module.css';
 import { Link } from 'react-router-dom';
 import { API_ROUTES, ERRORS, MESSAGES, UI_TEXT, VALIDATION } from '../components/common/constants/constants';
+import type { SignUpFormData } from './SignUp.types';
 
 const SignUp: React.FC = () => {
   const { login } = useAuth();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<SignUpFormData>({
     username: '',
     email: '',
     password: '',
@@ -27,7 +28,7 @@ const SignUp: React.FC = () => {
     setSuccess(null);
     setLoading(true);
 
-    // Validation
+    
     if (formData.password !== formData.confirmPassword) {
       setError(ERRORS.PASSWORD_MISMATCH);
       setLoading(false);
