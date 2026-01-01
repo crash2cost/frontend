@@ -54,8 +54,15 @@ const SignUp: React.FC = () => {
       }, VALIDATION.SUCCESS_REDIRECT_DELAY);
     } catch (err) {
       console.error(err);
-      const error = err as { response?: { data?: { message?: string } } };
-      setError(error.response?.data?.message || ERRORS.FAILED_SIGNUP);
+      const error = err as { response?: { data?: { message?: string; password?: string; username?: string; email?: string } } };
+      
+      // Check for validation errors from backend
+      const validationError = error.response?.data?.password || 
+                             error.response?.data?.username || 
+                             error.response?.data?.email ||
+                             error.response?.data?.message;
+      
+      setError(validationError || ERRORS.FAILED_SIGNUP);
     } finally {
       setLoading(false);
     }
