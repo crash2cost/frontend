@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import {
   API_BASE_URL,
+  API_BASE_PATHS,
   AUTH_SCHEME,
   CONTENT_TYPES,
   HEADER_NAMES,
@@ -18,7 +19,9 @@ export const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem(STORAGE_KEYS.authToken);
-    if (token) {
+    const requestUrl = config.url ?? '';
+    const isAuthRequest = requestUrl.startsWith(API_BASE_PATHS.auth);
+    if (token && !isAuthRequest) {
       config.headers[HEADER_NAMES.authorization] = `${AUTH_SCHEME} ${token}`;
     }
     return config;
