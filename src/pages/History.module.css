@@ -15,19 +15,18 @@
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   background: transparent;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--border-color);
   border-radius: 8px;
-  color: #374151;
+  color: var(--text-main);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  margin-bottom: 1.5rem;
 }
 
 .backButton:hover {
-  background: #f3f4f6;
-  border-color: #3b82f6;
-  color: #3b82f6;
+  background: var(--bg-secondary);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
 }
 
 .headerContent {
@@ -59,8 +58,8 @@
 .spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid #e5e7eb;
-  border-top-color: #3b82f6;
+  border: 4px solid var(--border-color);
+  border-top-color: var(--accent-blue);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -77,14 +76,15 @@
 }
 
 .summaryCard {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   padding: 2rem;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  color: white;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.4);
 }
 
 .summaryLabel {
@@ -105,24 +105,24 @@
   justify-content: center;
   padding: 4rem;
   gap: 1.5rem;
-  background: #f9fafb;
+  background: var(--bg-secondary);
   border-radius: 16px;
-  border: 2px dashed #d1d5db;
+  border: 2px dashed var(--border-color);
 }
 
 .emptyIcon {
-  color: #9ca3af;
+  color: var(--text-muted);
   opacity: 0.5;
 }
 
 .emptyTitle {
   font-size: 1.5rem;
-  color: #374151;
+  color: var(--text-main);
   margin: 0;
 }
 
 .emptyText {
-  color: #6b7280;
+  color: var(--text-muted);
   margin: 0;
   text-align: center;
   max-width: 500px;
@@ -130,7 +130,7 @@
 
 .dashboardButton {
   padding: 0.75rem 2rem;
-  background: #3b82f6;
+  background: var(--accent-blue);
   color: white;
   border: none;
   border-radius: 8px;
@@ -141,7 +141,7 @@
 }
 
 .dashboardButton:hover {
-  background: #2563eb;
+  background: #0284c7;
 }
 
 .historyGrid {
@@ -151,18 +151,18 @@
 }
 
 .historyCard {
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
   padding: 1.5rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  border: 2px solid #e5e7eb;
+  box-shadow: 0 4px 16px rgba(2, 6, 23, 0.4);
+  border: 1px solid var(--border-color);
   transition: all 0.3s ease;
 }
 
 .historyCard:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  border-color: #3b82f6;
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.6);
+  border-color: var(--accent-blue);
 }
 
 .cardHeader {
@@ -171,14 +171,14 @@
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .cardDate {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 0.9rem;
   font-weight: 500;
 }
@@ -219,13 +219,13 @@
 }
 
 .statusBadge.totalLoss {
-  background: #fee2e2;
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.15);
+  color: #fecaca;
 }
 
 .statusBadge.repairable {
-  background: #d1fae5;
-  color: #065f46;
+  background: rgba(34, 197, 94, 0.15);
+  color: #bbf7d0;
 }
 
 .costDisplay {
@@ -233,14 +233,14 @@
   flex-direction: column;
   align-items: center;
   padding: 1.5rem;
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #1e40af 100%);
   border-radius: 12px;
   margin-bottom: 1.5rem;
 }
 
 .costLabel {
   font-size: 0.875rem;
-  color: #bfdbfe;
+  color: #93c5fd;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -266,7 +266,7 @@
   margin: 0 0 0.75rem 0;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--text-main);
 }
 
 .damageTitle svg {
@@ -278,14 +278,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1rem;
-  background: #f9fafb;
+  background: var(--bg-secondary);
   border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
 }
 
 .damageName {
   font-weight: 600;
-  color: #111827;
+  color: var(--text-main);
   font-size: 0.95rem;
 }
 
