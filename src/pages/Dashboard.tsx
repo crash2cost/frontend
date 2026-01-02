@@ -83,21 +83,6 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleDeleteOldReports = async () => {
-    if (!confirm('Are you sure you want to delete all reports? This action cannot be undone.')) {
-      return;
-    }
-    try {
-      await reportApi.deleteAllReports();
-      setAssessments(new Map());
-      alert('All reports deleted successfully');
-    } catch (error) {
-      console.error('Failed to delete reports:', error);
-      alert('Failed to delete reports. Please try again.');
-    }
-  };
-
-  
   const totalAssessed = assessments.size;
   const totalCost = Array.from(assessments.values()).reduce((sum, a) => sum + a.totalCost, 0);
   const totalLossCount = Array.from(assessments.values()).filter(a => a.totalLoss).length;
@@ -105,7 +90,6 @@ const Dashboard: React.FC = () => {
   return (
     <div className={styles.container}>
       <DashboardHeader
-        onDeleteAllReports={handleDeleteOldReports}
         onGoToHistory={() => navigate('/history')}
         onLogout={logout}
       />

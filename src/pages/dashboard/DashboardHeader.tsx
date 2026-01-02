@@ -1,4 +1,4 @@
-import { History, Trash2 } from 'lucide-react';
+import { History } from 'lucide-react';
 import styles from '../Dashboard.module.css';
 
 type DashboardHeaderProps = {
