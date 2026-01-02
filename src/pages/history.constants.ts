@@ -9,6 +9,7 @@ export const HISTORY_LOG_MESSAGES = {
 
 export const HISTORY_ALERT_MESSAGES = {
   deleteConfirm: 'Are you sure you want to delete this assessment? This action cannot be undone.',
+  deleteSelectedConfirm: 'Delete selected assessments? This action cannot be undone.',
   deleteFailure: 'Failed to delete assessment. Please try again.',
 } as const;
 
@@ -26,6 +27,11 @@ export const HISTORY_TEXT = {
   totalLoss: 'Total Loss',
   repairable: 'Repairable',
   deleteAssessmentTitle: 'Delete assessment',
+  selectAssessment: 'Select assessment',
+  deleteSelected: 'Delete Selected',
+  selectAll: 'Select All',
+  clearSelection: 'Clear Selection',
+  selectedCount: 'selected',
   totalCostLabel: 'Total Cost',
   damagedPartsLabel: 'Damaged Parts',
   assessmentNotAvailable: 'Assessment not available',
