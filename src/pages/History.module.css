@@ -6,6 +6,11 @@
 }
 
 .header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
   margin-bottom: 2rem;
 }
 
@@ -36,14 +41,71 @@
 .title {
   font-size: 2.5rem;
   font-weight: bold;
-  color: #111827;
+  color: var(--text-main);
   margin: 0;
 }
 
 .subtitle {
-  color: #6b7280;
+  color: var(--text-muted);
   margin: 0.5rem 0 0 0;
   font-size: 1.1rem;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.selectAllButton {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.selectAllButton:hover:not(:disabled) {
+  background: var(--bg-secondary);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.selectAllButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.deleteSelectedButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ef4444;
+  border: none;
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.deleteSelectedButton:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.deleteSelectedButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.selectedCount {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
 }
 
 .loading {
@@ -303,42 +365,81 @@
 }
 
 .severity1 {
-  background: #dbeafe;
-  color: #1e40af;
+  background: rgba(59, 130, 246, 0.2);
+  color: #bfdbfe;
 }
 
 .severity2 {
-  background: #d1fae5;
-  color: #065f46;
+  background: rgba(34, 197, 94, 0.2);
+  color: #bbf7d0;
 }
 
 .severity3 {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(251, 191, 36, 0.2);
+  color: #fde68a;
 }
 
 .severity4 {
-  background: #fed7aa;
-  color: #9a3412;
+  background: rgba(249, 115, 22, 0.2);
+  color: #fdba74;
 }
 
 .severity5 {
-  background: #fee2e2;
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.2);
+  color: #fecaca;
 }
 
 .damageCost {
   font-weight: 700;
-  color: #059669;
+  color: #34d399;
   font-size: 0.9rem;
 }
 
 .noAssessment {
   padding: 2rem;
   text-align: center;
-  color: #6b7280;
-  background: #f9fafb;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
   border-radius: 8px;
+}
+
+.selectLabel {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 0.35rem;
+  position: relative;
+}
+
+.selectLabel input {
+  opacity: 0;
+  position: absolute;
+}
+
+.selectIndicator {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-color);
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  background: var(--bg-secondary);
+}
+
+.selectLabel input:checked + .selectIndicator {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+}
+
+.selectLabel input:checked + .selectIndicator::after {
+  content: '';
+  width: 6px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
 @media (max-width: 768px) {
