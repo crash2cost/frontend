@@ -19,6 +19,7 @@ const History: React.FC = () => {
   const [uploadedImages, setUploadedImages] = useState<ImageResponse[]>([]);
   const [assessments, setAssessments] = useState<Map<string, DamageReport>>(new Map());
   const [loading, setLoading] = useState(true);
+  const [selectedReportIds, setSelectedReportIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadHistory();
@@ -45,6 +46,16 @@ const History: React.FC = () => {
       assessmentMap.set(report.imageId, report);
     });
     setAssessments(assessmentMap);
+    const availableReportIds = new Set(reports.map(report => report.id).filter(Boolean) as string[]);
+    setSelectedReportIds(prev => {
+      const next = new Set<string>();
+      prev.forEach(id => {
+        if (availableReportIds.has(id)) {
+          next.add(id);
+        }
+      });
+      return next;
+    });
   };
 
   const handleDeleteAssessment = async (reportId: string) => {
@@ -53,6 +64,11 @@ const History: React.FC = () => {
     }
     try {
       await reportApi.deleteReport(reportId);
+      setSelectedReportIds(prev => {
+        const next = new Set(prev);
+        next.delete(reportId);
+        return next;
+      });
       await loadHistory();
     } catch (error) {
       console.error(HISTORY_LOG_MESSAGES.deleteFailure, error);
@@ -60,12 +76,60 @@ const History: React.FC = () => {
     }
   };
 
+  const handleDeleteSelected = async () => {
+    if (selectedReportIds.size === 0) {
+      return;
+    }
+    if (!confirm(HISTORY_ALERT_MESSAGES.deleteSelectedConfirm)) {
+      return;
+    }
+    try {
+      await Promise.all(Array.from(selectedReportIds).map(reportId => reportApi.deleteReport(reportId)));
+      setSelectedReportIds(new Set());
+      await loadHistory();
+    } catch (error) {
+      console.error(HISTORY_LOG_MESSAGES.deleteFailure, error);
+      alert(HISTORY_ALERT_MESSAGES.deleteFailure);
+    }
+  };
+
+  const handleToggleSelect = (reportId: string) => {
+    setSelectedReportIds(prev => {
+      const next = new Set(prev);
+      if (next.has(reportId)) {
+        next.delete(reportId);
+      } else {
+        next.add(reportId);
+      }
+      return next;
+    });
+  };
+
+  const handleToggleSelectAll = () => {
+    const allReportIds = Array.from(assessments.values())
+      .map(report => report.id)
+      .filter(Boolean) as string[];
+    setSelectedReportIds(prev => {
+      if (prev.size === allReportIds.length) {
+        return new Set();
+      }
+      return new Set(allReportIds);
+    });
+  };
+
   const totalCost = Array.from(assessments.values()).reduce((sum, a) => sum + a.totalCost, 0);
   const totalLossCount = Array.from(assessments.values()).filter(a => a.totalLoss).length;
+  const totalSelectable = Array.from(assessments.values()).filter(a => a.id).length;
 
   return (
     <div className={styles.container}>
-      <HistoryHeader onBack={() => navigate(HISTORY_ROUTES.dashboard)} />
+      <HistoryHeader
+        onBack={() => navigate(HISTORY_ROUTES.dashboard)}
+        onDeleteSelected={handleDeleteSelected}
+        onToggleSelectAll={handleToggleSelectAll}
+        selectedCount={selectedReportIds.size}
+        totalSelectable={totalSelectable}
+      />
 
       {loading ? (
         <div className={styles.loading}>
@@ -83,6 +147,8 @@ const History: React.FC = () => {
             uploadedImages={uploadedImages}
             assessments={assessments}
             onDeleteAssessment={handleDeleteAssessment}
+            onToggleSelect={handleToggleSelect}
+            selectedReportIds={selectedReportIds}
             onGoToDashboard={() => navigate(HISTORY_ROUTES.dashboard)}
           />
         </>
