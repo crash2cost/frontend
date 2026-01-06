@@ -7,8 +7,8 @@ import { HISTORY_CLASS_KEYS, HISTORY_TEXT } from '../history.constants';
 type HistoryGridProps = {
   uploadedImages: ImageResponse[];
   assessments: Map<string, DamageReport>;
-  onDeleteAssessment: (reportId: string) => void;
-  onToggleSelect: (reportId: string) => void;
+  onDeleteAssessment: (imageId: string) => void;
+  onToggleSelect: (imageId: string) => void;
   selectedReportIds: Set<string>;
   onGoToDashboard: () => void;
 };
@@ -38,8 +38,7 @@ const HistoryGrid = ({
     <div className={styles.historyGrid}>
       {uploadedImages.map((image) => {
         const assessment = assessments.get(image.id);
-        const reportId = assessment?.id;
-        const isSelected = reportId ? selectedReportIds.has(reportId) : false;
+        const isSelected = selectedReportIds.has(image.id);
 
         return (
           <div key={image.id} className={styles.historyCard}>
@@ -49,43 +48,39 @@ const HistoryGrid = ({
                 <span>{new Date(image.uploadDate).toLocaleDateString()}</span>
               </div>
               <div className={styles.cardActions}>
+                <label className={styles.selectLabel}>
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => onToggleSelect(image.id)}
+                    aria-label={HISTORY_TEXT.selectAssessment}
+                  />
+                  <span className={styles.selectIndicator} />
+                </label>
                 {assessment && (
-                  <>
-                    {reportId && (
-                      <label className={styles.selectLabel}>
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => onToggleSelect(reportId)}
-                          aria-label={HISTORY_TEXT.selectAssessment}
-                        />
-                        <span className={styles.selectIndicator} />
-                      </label>
+                  <div
+                    className={`${styles.statusBadge} ${assessment.totalLoss ? styles.totalLoss : styles.repairable}`}
+                  >
+                    {assessment.totalLoss ? (
+                      <>
+                        <XCircle size={16} />
+                        <span>{HISTORY_TEXT.totalLoss}</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle size={16} />
+                        <span>{HISTORY_TEXT.repairable}</span>
+                      </>
                     )}
-                    <div
-                      className={`${styles.statusBadge} ${assessment.totalLoss ? styles.totalLoss : styles.repairable}`}
-                    >
-                      {assessment.totalLoss ? (
-                        <>
-                          <XCircle size={16} />
-                          <span>{HISTORY_TEXT.totalLoss}</span>
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle size={16} />
-                          <span>{HISTORY_TEXT.repairable}</span>
-                        </>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => onDeleteAssessment(assessment.id!)}
-                      className={styles.deleteButton}
-                      title={HISTORY_TEXT.deleteAssessmentTitle}
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </>
+                  </div>
                 )}
+                <button
+                  onClick={() => onDeleteAssessment(image.id)}
+                  className={styles.deleteButton}
+                  title={HISTORY_TEXT.deleteAssessmentTitle}
+                >
+                  <Trash2 size={16} />
+                </button>
               </div>
             </div>
 

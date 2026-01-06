@@ -19,7 +19,7 @@ const History: React.FC = () => {
   const [uploadedImages, setUploadedImages] = useState<ImageResponse[]>([]);
   const [assessments, setAssessments] = useState<Map<string, DamageReport>>(new Map());
   const [loading, setLoading] = useState(true);
-  const [selectedReportIds, setSelectedReportIds] = useState<Set<string>>(new Set());
+  const [selectedImageIds, setSelectedImageIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadHistory();
@@ -46,11 +46,11 @@ const History: React.FC = () => {
       assessmentMap.set(report.imageId, report);
     });
     setAssessments(assessmentMap);
-    const availableReportIds = new Set(reports.map(report => report.id).filter(Boolean) as string[]);
-    setSelectedReportIds(prev => {
+    const availableImageIds = new Set(images.map(image => image.id));
+    setSelectedImageIds(prev => {
       const next = new Set<string>();
       prev.forEach(id => {
-        if (availableReportIds.has(id)) {
+        if (availableImageIds.has(id)) {
           next.add(id);
         }
       });
@@ -58,15 +58,19 @@ const History: React.FC = () => {
     });
   };
 
-  const handleDeleteAssessment = async (reportId: string) => {
+  const handleDeleteAssessment = async (imageId: string) => {
     if (!confirm(HISTORY_ALERT_MESSAGES.deleteConfirm)) {
       return;
     }
     try {
-      await reportApi.deleteReport(reportId);
-      setSelectedReportIds(prev => {
+      const assessment = assessments.get(imageId);
+      if (assessment?.id) {
+        await reportApi.deleteReport(assessment.id);
+      }
+      await imageApi.deleteImage(imageId);
+      setSelectedImageIds(prev => {
         const next = new Set(prev);
-        next.delete(reportId);
+        next.delete(imageId);
         return next;
       });
       await loadHistory();
@@ -77,15 +81,23 @@ const History: React.FC = () => {
   };
 
   const handleDeleteSelected = async () => {
-    if (selectedReportIds.size === 0) {
+    if (selectedImageIds.size === 0) {
       return;
     }
     if (!confirm(HISTORY_ALERT_MESSAGES.deleteSelectedConfirm)) {
       return;
     }
     try {
-      await Promise.all(Array.from(selectedReportIds).map(reportId => reportApi.deleteReport(reportId)));
-      setSelectedReportIds(new Set());
+      await Promise.all(
+        Array.from(selectedImageIds).map(async (imageId) => {
+          const assessment = assessments.get(imageId);
+          if (assessment?.id) {
+            await reportApi.deleteReport(assessment.id);
+          }
+          await imageApi.deleteImage(imageId);
+        })
+      );
+      setSelectedImageIds(new Set());
       await loadHistory();
     } catch (error) {
       console.error(HISTORY_LOG_MESSAGES.deleteFailure, error);
@@ -93,33 +105,31 @@ const History: React.FC = () => {
     }
   };
 
-  const handleToggleSelect = (reportId: string) => {
-    setSelectedReportIds(prev => {
+  const handleToggleSelect = (imageId: string) => {
+    setSelectedImageIds(prev => {
       const next = new Set(prev);
-      if (next.has(reportId)) {
-        next.delete(reportId);
+      if (next.has(imageId)) {
+        next.delete(imageId);
       } else {
-        next.add(reportId);
+        next.add(imageId);
       }
       return next;
     });
   };
 
   const handleToggleSelectAll = () => {
-    const allReportIds = Array.from(assessments.values())
-      .map(report => report.id)
-      .filter(Boolean) as string[];
-    setSelectedReportIds(prev => {
-      if (prev.size === allReportIds.length) {
+    const allImageIds = uploadedImages.map(image => image.id);
+    setSelectedImageIds(prev => {
+      if (prev.size === allImageIds.length) {
         return new Set();
       }
-      return new Set(allReportIds);
+      return new Set(allImageIds);
     });
   };
 
   const totalCost = Array.from(assessments.values()).reduce((sum, a) => sum + a.totalCost, 0);
   const totalLossCount = Array.from(assessments.values()).filter(a => a.totalLoss).length;
-  const totalSelectable = Array.from(assessments.values()).filter(a => a.id).length;
+  const totalSelectable = uploadedImages.length;
 
   return (
     <div className={styles.container}>
@@ -127,7 +137,7 @@ const History: React.FC = () => {
         onBack={() => navigate(HISTORY_ROUTES.dashboard)}
         onDeleteSelected={handleDeleteSelected}
         onToggleSelectAll={handleToggleSelectAll}
-        selectedCount={selectedReportIds.size}
+        selectedCount={selectedImageIds.size}
         totalSelectable={totalSelectable}
       />
 
@@ -148,7 +158,7 @@ const History: React.FC = () => {
             assessments={assessments}
             onDeleteAssessment={handleDeleteAssessment}
             onToggleSelect={handleToggleSelect}
-            selectedReportIds={selectedReportIds}
+            selectedReportIds={selectedImageIds}
             onGoToDashboard={() => navigate(HISTORY_ROUTES.dashboard)}
           />
         </>
