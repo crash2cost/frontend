@@ -1,4 +1,5 @@
 import { AlertTriangle, CheckCircle, Sparkles, Upload, XCircle } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ImageUpload } from '../../components/common';
 import { imageApi, type ImageResponse } from '../../api/image.api';
 import type { DamageReport } from '../../api/report.api';
@@ -21,6 +22,77 @@ const DashboardUploadSection = ({
   onProcessImage,
   onUpload,
 }: DashboardUploadSectionProps) => {
+  const [imageUrls, setImageUrls] = useState<Map<string, string>>(new Map());
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
+  const imageUrlRef = useRef<Map<string, string>>(new Map());
+  const imageErrorRef = useRef<Set<string>>(new Set());
+
+  const sortedImages = useMemo(() => {
+    return [...uploadedImages].sort((a, b) => {
+      const aTime = new Date(a.uploadDate).getTime();
+      const bTime = new Date(b.uploadDate).getTime();
+      return bTime - aTime;
+    });
+  }, [uploadedImages]);
+
+  const latestImage = sortedImages[0];
+  const uploadedIds = useMemo(() => (latestImage ? [latestImage.id] : []), [latestImage]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const nextUrls = new Map(imageUrlRef.current);
+    const nextErrors = new Set(imageErrorRef.current);
+    const activeIds = new Set(uploadedIds);
+
+    nextUrls.forEach((url, id) => {
+      if (!activeIds.has(id)) {
+        URL.revokeObjectURL(url);
+        nextUrls.delete(id);
+      }
+    });
+
+    nextErrors.forEach((id) => {
+      if (!activeIds.has(id)) {
+        nextErrors.delete(id);
+      }
+    });
+
+    const loadImages = async () => {
+      for (const imageId of uploadedIds) {
+        if (nextUrls.has(imageId) || nextErrors.has(imageId)) {
+          continue;
+        }
+        try {
+          const blob = await imageApi.getImageBlob(imageId);
+          const objectUrl = URL.createObjectURL(blob);
+          if (!isMounted) {
+            URL.revokeObjectURL(objectUrl);
+            return;
+          }
+          nextUrls.set(imageId, objectUrl);
+        } catch {
+          nextErrors.add(imageId);
+        }
+      }
+
+      if (isMounted) {
+        imageUrlRef.current = new Map(nextUrls);
+        imageErrorRef.current = new Set(nextErrors);
+        setImageUrls(new Map(nextUrls));
+        setImageErrors(new Set(nextErrors));
+      }
+    };
+
+    loadImages();
+
+    return () => {
+      isMounted = false;
+      nextUrls.forEach((url) => {
+        URL.revokeObjectURL(url);
+      });
+    };
+  }, [uploadedIds]);
+
   return (
     <div className={styles.content}>
       <div className={styles.section}>
@@ -44,19 +116,27 @@ const DashboardUploadSection = ({
           </div>
         )}
 
-        {uploadedImages.length > 0 && (
+        {latestImage && (
           <div className={styles.assessmentsContainer}>
-            {uploadedImages.map((image) => {
+            {(() => {
+              const image = latestImage;
               const assessment = assessments.get(image.id);
               const isProcessing = processing.has(image.id);
 
               return (
                 <div key={image.id} className={styles.imageCard}>
-                  <img
-                    src={imageApi.getImageUrl(image.id)}
-                    alt="Crash damage"
-                    className={styles.damageImage}
-                  />
+                  {imageUrls.get(image.id) && !imageErrors.has(image.id) ? (
+                    <img
+                      src={imageUrls.get(image.id)}
+                      alt="Crash damage"
+                      className={styles.damageImage}
+                    />
+                  ) : (
+                    <div className={styles.imagePlaceholder}>
+                      <div className={styles.imagePlaceholderIcon}></div>
+                      <span>Image unavailable</span>
+                    </div>
+                  )}
 
                   {!assessment && !isProcessing && (
                     <div className={styles.mlButtonContainer}>
@@ -151,7 +231,7 @@ const DashboardUploadSection = ({
                   )}
                 </div>
               );
-            })}
+            })()}
           </div>
         )}
       </div>
