@@ -1,11 +1,11 @@
 import { api } from './axios';
 import { REPORTS_AI_ASSESSMENTS_PATH } from './report.paths';
-import type { DamageAssessment } from '../types/damage';
+import type { DamageReport } from './report.api';
 
 export const mlApi = {
-  async assessDamage(imageId: string): Promise<DamageAssessment> {
+  async assessDamage(imageId: string): Promise<DamageReport> {
     try {
-      const response = await api.post<DamageAssessment>(REPORTS_AI_ASSESSMENTS_PATH, {
+      const response = await api.post<DamageReport>(REPORTS_AI_ASSESSMENTS_PATH, {
         imageId,
         severity: 3,
         carSegment: 'Family',
