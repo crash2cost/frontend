@@ -42,6 +42,13 @@ export const imageApi = {
     return `${API_BASE_URL}${buildImagePath(imageId)}`;
   },
 
+  getImageBlob: async (imageId: string): Promise<Blob> => {
+    const response = await api.get(buildImagePath(imageId), {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
+
   deleteImage: async (imageId: string): Promise<void> => {
     await api.delete(buildImagePath(imageId));
   },
