@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { imageApi } from '../api/image.api';
 import { reportApi, type DamageReport } from '../api/report.api';
 import type { ImageResponse } from '../api/image.api';
@@ -13,6 +14,26 @@ import {
   HISTORY_TEXT,
 } from './history.constants';
 import styles from './History.module.css';
+
+const pageVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.4,
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }
+  }
+};
 
 const History: React.FC = () => {
   const navigate = useNavigate();
@@ -132,38 +153,62 @@ const History: React.FC = () => {
   const totalSelectable = uploadedImages.length;
 
   return (
-    <div className={styles.container}>
-      <HistoryHeader
-        onBack={() => navigate(HISTORY_ROUTES.dashboard)}
-        onDeleteSelected={handleDeleteSelected}
-        onToggleSelectAll={handleToggleSelectAll}
-        selectedCount={selectedImageIds.size}
-        totalSelectable={totalSelectable}
-      />
+    <motion.div
+      className={styles.container}
+      variants={pageVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <motion.div variants={itemVariants}>
+        <HistoryHeader
+          onBack={() => navigate(HISTORY_ROUTES.dashboard)}
+          onDeleteSelected={handleDeleteSelected}
+          onToggleSelectAll={handleToggleSelectAll}
+          selectedCount={selectedImageIds.size}
+          totalSelectable={totalSelectable}
+        />
+      </motion.div>
 
-      {loading ? (
-        <div className={styles.loading}>
-          <div className={styles.spinner}></div>
-          <p>{HISTORY_TEXT.loading}</p>
-        </div>
-      ) : (
-        <>
-          <HistorySummary
-            totalAssessments={uploadedImages.length}
-            totalCost={totalCost}
-            totalLossCount={totalLossCount}
-          />
-          <HistoryGrid
-            uploadedImages={uploadedImages}
-            assessments={assessments}
-            onDeleteAssessment={handleDeleteAssessment}
-            onToggleSelect={handleToggleSelect}
-            selectedReportIds={selectedImageIds}
-            onGoToDashboard={() => navigate(HISTORY_ROUTES.dashboard)}
-          />
-        </>
-      )}
-    </div>
+      <AnimatePresence mode="wait">
+        {loading ? (
+          <motion.div
+            className={styles.loading}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            key="loading"
+          >
+            <div className={styles.spinner}></div>
+            <p>{HISTORY_TEXT.loading}</p>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div variants={itemVariants}>
+              <HistorySummary
+                totalAssessments={uploadedImages.length}
+                totalCost={totalCost}
+                totalLossCount={totalLossCount}
+              />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <HistoryGrid
+                uploadedImages={uploadedImages}
+                assessments={assessments}
+                onDeleteAssessment={handleDeleteAssessment}
+                onToggleSelect={handleToggleSelect}
+                selectedReportIds={selectedImageIds}
+                onGoToDashboard={() => navigate(HISTORY_ROUTES.dashboard)}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 
