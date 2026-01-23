@@ -1,5 +1,6 @@
 import { AlertTriangle, CheckCircle, Sparkles, Upload, XCircle } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ImageUpload } from '../../components/common';
 import { imageApi, type ImageResponse } from '../../api/image.api';
 import type { DamageReport } from '../../api/report.api';
@@ -138,30 +139,48 @@ const DashboardUploadSection = ({
                     </div>
                   )}
 
-                  {!assessment && !isProcessing && (
-                    <div className={styles.mlButtonContainer}>
-                      <button
-                        onClick={() => onProcessImage(image.id)}
-                        className={styles.mlButton}
+                  <AnimatePresence mode="wait">
+                    {!assessment && !isProcessing && (
+                      <motion.div
+                        className={styles.mlButtonContainer}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
                       >
-                        <Sparkles size={20} />
-                        Process with AI
-                      </button>
-                      <p className={styles.mlDescription}>
-                        Click to analyze damage with our ML model
-                      </p>
-                    </div>
-                  )}
+                        <motion.button
+                          onClick={() => onProcessImage(image.id)}
+                          className={styles.mlButton}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <Sparkles size={20} />
+                          Process with AI
+                        </motion.button>
+                        <p className={styles.mlDescription}>
+                          Click to analyze damage with our ML model
+                        </p>
+                      </motion.div>
+                    )}
 
-                  {isProcessing && (
-                    <div className={styles.processingBox}>
-                      <div className={styles.spinner}></div>
-                      <span>Analyzing damage with AI...</span>
-                    </div>
-                  )}
+                    {isProcessing && (
+                      <motion.div
+                        className={styles.processingBox}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                      >
+                        <div className={styles.spinner}></div>
+                        <span>Analyzing damage with AI...</span>
+                      </motion.div>
+                    )}
 
-                  {assessment && (
-                    <div className={styles.resultsBox}>
+                    {assessment && (
+                      <motion.div
+                        className={styles.resultsBox}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4 }}
+                      >
                       <div className={styles.resultsHeader}>
                         <h3 className={styles.resultsTitle}>Damage Assessment Results</h3>
                         <div
@@ -227,8 +246,9 @@ const DashboardUploadSection = ({
                             : 'Recently'}
                         </span>
                       </div>
-                    </div>
-                  )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               );
             })()}

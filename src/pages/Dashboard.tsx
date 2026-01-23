@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../hooks';
 import DashboardEmptyState from './dashboard/DashboardEmptyState';
 import DashboardHeader from './dashboard/DashboardHeader';
@@ -10,6 +11,26 @@ import { imageApi, type ImageResponse } from '../api/image.api';
 import { mlApi } from '../api/ml.api';
 import { reportApi, type DamageReport } from '../api/report.api';
 import styles from './Dashboard.module.css';
+
+const pageVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.4,
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }
+  }
+};
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -93,43 +114,82 @@ const Dashboard: React.FC = () => {
   const busyMessage = uploading ? 'Uploading images...' : 'Analyzing damage with AI...';
 
   return (
-    <div className={styles.container}>
-      {toast && (
-        <Toast message={toast.message} variant={toast.variant} onClose={() => setToast(null)} />
-      )}
+    <motion.div
+      className={styles.container}
+      variants={pageVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <AnimatePresence>
+        {toast && (
+          <Toast message={toast.message} variant={toast.variant} onClose={() => setToast(null)} />
+        )}
+      </AnimatePresence>
 
-      {isBusy && (
-        <div className={styles.busyOverlay} aria-live="polite" aria-busy="true">
-          <div className={styles.busyContent}>
-            <div className={styles.busySpinner}></div>
-            <span>{busyMessage}</span>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {isBusy && (
+          <motion.div
+            className={styles.busyOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            aria-live="polite"
+            aria-busy="true"
+          >
+            <motion.div
+              className={styles.busyContent}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className={styles.busySpinner}></div>
+              <span>{busyMessage}</span>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <DashboardHeader
-        onGoToHistory={() => navigate('/history')}
-        onLogout={logout}
-      />
+      <motion.div variants={itemVariants}>
+        <DashboardHeader
+          onGoToHistory={() => navigate('/history')}
+          onLogout={logout}
+        />
+      </motion.div>
 
-      <DashboardStats
-        totalAssessed={totalAssessed}
-        totalCost={totalCost}
-        totalLossCount={totalLossCount}
-        totalUploaded={uploadedImages.length}
-      />
+      <motion.div variants={itemVariants}>
+        <DashboardStats
+          totalAssessed={totalAssessed}
+          totalCost={totalCost}
+          totalLossCount={totalLossCount}
+          totalUploaded={uploadedImages.length}
+        />
+      </motion.div>
 
-      <DashboardUploadSection
-        assessments={assessments}
-        processing={processing}
-        uploadedImages={uploadedImages}
-        uploading={uploading}
-        onProcessImage={processImage}
-        onUpload={handleUpload}
-      />
+      <motion.div variants={itemVariants}>
+        <DashboardUploadSection
+          assessments={assessments}
+          processing={processing}
+          uploadedImages={uploadedImages}
+          uploading={uploading}
+          onProcessImage={processImage}
+          onUpload={handleUpload}
+        />
+      </motion.div>
 
-      {uploadedImages.length === 0 && <DashboardEmptyState />}
-    </div>
+      <AnimatePresence>
+        {uploadedImages.length === 0 && (
+          <motion.div
+            variants={itemVariants}
+            initial="hidden"
+            animate="visible"
+            exit={{ opacity: 0, y: -20 }}
+          >
+            <DashboardEmptyState />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 
