@@ -2,12 +2,33 @@ import React, { useState } from 'react';
 import { useAuth } from '../hooks';
 import { api } from '../api';
 import { Button, Input, PasswordRequirements } from '../components/common';
-import { User, Lock, Mail, AlertCircle, CheckCircle } from 'lucide-react';
+import { User, Lock, Mail, AlertCircle, CheckCircle, Zap, Shield } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { AuthResponse } from '../types';
 import styles from './SignUp.module.css';
 import { Link } from 'react-router-dom';
 import { API_ROUTES, ERRORS, MESSAGES, UI_TEXT, VALIDATION } from '../components/common/constants/constants';
 import type { SignUpFormData } from './SignUp.types';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.4,
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }
+  }
+};
 
 const SignUp: React.FC = () => {
   const { login } = useAuth();
@@ -70,27 +91,58 @@ const SignUp: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.card}>
-        <div className={styles.header}>
-          <h2 className={styles.title}>{UI_TEXT.SIGNUP.TITLE}</h2>
+      {/* Animated background orbs */}
+      <div className={styles.orb1}></div>
+      <div className={styles.orb2}></div>
+      <div className={styles.orb3}></div>
+
+      <motion.div
+        className={styles.card}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <div className={styles.glowEffect}></div>
+
+        <motion.div className={styles.header} variants={itemVariants}>
+          <div className={styles.logoIcon}>
+            <Shield size={28} />
+          </div>
+          <h2 className={styles.title}>
+            <span className={styles.titleGradient}>{UI_TEXT.SIGNUP.TITLE}</span>
+          </h2>
           <p className={styles.subtitle}>{UI_TEXT.SIGNUP.SUBTITLE}</p>
-        </div>
+        </motion.div>
 
-        {error && (
-          <div className={styles.error}>
-            <AlertCircle size={16} />
-            {error}
-          </div>
-        )}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              className={styles.error}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              <AlertCircle size={16} />
+              {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {success && (
-          <div className={styles.success}>
-            <CheckCircle size={16} />
-            {success}
-          </div>
-        )}
+        <AnimatePresence>
+          {success && (
+            <motion.div
+              className={styles.success}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              <CheckCircle size={16} />
+              {success}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <motion.form onSubmit={handleSubmit} className={styles.form} variants={itemVariants}>
           <Input 
             label="Username" 
             icon={User}
@@ -136,18 +188,20 @@ const SignUp: React.FC = () => {
             required
           />
 
-          <Button type="submit" isLoading={loading} className={styles.submitButton}>
-            Create Account
-          </Button>
-        </form>
+          <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+            <Button type="submit" isLoading={loading} className={styles.submitButton}>
+              Create Account
+            </Button>
+          </motion.div>
+        </motion.form>
 
-        <div className={styles.footer}>
+        <motion.div className={styles.footer} variants={itemVariants}>
           Already have an account?
           <Link to="/login" className={styles.loginLink}>
             Sign In
           </Link>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
