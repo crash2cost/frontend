@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { imageApi } from '../api/image.api';
 import { reportApi, type DamageReport } from '../api/report.api';
 import type { ImageResponse } from '../api/image.api';
+import { STORAGE_KEYS } from '../constants/api.constants';
+import { getTokenRole } from '../utils/jwt';
 import HistoryGrid from './history/HistoryGrid';
 import HistoryHeader from './history/HistoryHeader';
 import HistorySummary from './history/HistorySummary';
@@ -41,6 +43,7 @@ const History: React.FC = () => {
   const [assessments, setAssessments] = useState<Map<string, DamageReport>>(new Map());
   const [loading, setLoading] = useState(true);
   const [selectedImageIds, setSelectedImageIds] = useState<Set<string>>(new Set());
+  const [readOnly, setReadOnly] = useState(false);
 
   useEffect(() => {
     loadHistory();
@@ -51,8 +54,33 @@ const History: React.FC = () => {
     let reports: DamageReport[] = [];
 
     try {
-      images = await imageApi.getMyImages();
-      reports = await reportApi.getUserDamageReports();
+      const token = localStorage.getItem(STORAGE_KEYS.authToken);
+      const role = token ? getTokenRole(token) : null;
+      const isAdmin = role?.toUpperCase() === 'ADMIN';
+      setReadOnly(isAdmin);
+
+      if (isAdmin) {
+        reports = await reportApi.getAllDamageReports();
+        const imageMap = new Map<string, ImageResponse>();
+        reports.forEach(report => {
+          if (!report.imageId) {
+            return;
+          }
+          if (!imageMap.has(report.imageId)) {
+            imageMap.set(report.imageId, {
+              id: report.imageId,
+              filename: report.imageId,
+              contentType: 'image/*',
+              size: 0,
+              uploadDate: report.assessmentDate || report.eventDate || new Date().toISOString(),
+            });
+          }
+        });
+        images = Array.from(imageMap.values());
+      } else {
+        images = await imageApi.getMyImages();
+        reports = await reportApi.getUserDamageReports();
+      }
     } catch (error) {
       console.error(HISTORY_LOG_MESSAGES.loadFailure, error);
       return;
@@ -80,6 +108,9 @@ const History: React.FC = () => {
   };
 
   const handleDeleteAssessment = async (imageId: string) => {
+    if (readOnly) {
+      return;
+    }
     if (!confirm(HISTORY_ALERT_MESSAGES.deleteConfirm)) {
       return;
     }
@@ -102,6 +133,9 @@ const History: React.FC = () => {
   };
 
   const handleDeleteSelected = async () => {
+    if (readOnly) {
+      return;
+    }
     if (selectedImageIds.size === 0) {
       return;
     }
@@ -127,6 +161,9 @@ const History: React.FC = () => {
   };
 
   const handleToggleSelect = (imageId: string) => {
+    if (readOnly) {
+      return;
+    }
     setSelectedImageIds(prev => {
       const next = new Set(prev);
       if (next.has(imageId)) {
@@ -139,6 +176,9 @@ const History: React.FC = () => {
   };
 
   const handleToggleSelectAll = () => {
+    if (readOnly) {
+      return;
+    }
     const allImageIds = uploadedImages.map(image => image.id);
     setSelectedImageIds(prev => {
       if (prev.size === allImageIds.length) {
