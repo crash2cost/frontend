@@ -206,6 +206,7 @@ const History: React.FC = () => {
           onToggleSelectAll={handleToggleSelectAll}
           selectedCount={selectedImageIds.size}
           totalSelectable={totalSelectable}
+          readOnly={readOnly}
         />
       </motion.div>
 
@@ -243,6 +244,7 @@ const History: React.FC = () => {
                 onToggleSelect={handleToggleSelect}
                 selectedReportIds={selectedImageIds}
                 onGoToDashboard={() => navigate(HISTORY_ROUTES.dashboard)}
+                readOnly={readOnly}
               />
             </motion.div>
           </motion.div>
