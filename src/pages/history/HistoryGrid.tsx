@@ -11,6 +11,7 @@ type HistoryGridProps = {
   onToggleSelect: (imageId: string) => void;
   selectedReportIds: Set<string>;
   onGoToDashboard: () => void;
+  readOnly?: boolean;
 };
 
 const HistoryGrid = ({
@@ -20,6 +21,7 @@ const HistoryGrid = ({
   onToggleSelect,
   selectedReportIds,
   onGoToDashboard,
+  readOnly = false,
 }: HistoryGridProps) => {
   if (uploadedImages.length === 0) {
     return (
@@ -39,6 +41,7 @@ const HistoryGrid = ({
       {uploadedImages.map((image) => {
         const assessment = assessments.get(image.id);
         const isSelected = selectedReportIds.has(image.id);
+        const canManage = !readOnly;
 
         return (
           <div key={image.id} className={styles.historyCard}>
@@ -48,15 +51,17 @@ const HistoryGrid = ({
                 <span>{new Date(image.uploadDate).toLocaleDateString()}</span>
               </div>
               <div className={styles.cardActions}>
-                <label className={styles.selectLabel}>
-                  <input
-                    type="checkbox"
-                    checked={isSelected}
-                    onChange={() => onToggleSelect(image.id)}
-                    aria-label={HISTORY_TEXT.selectAssessment}
-                  />
-                  <span className={styles.selectIndicator} />
-                </label>
+                {canManage && (
+                  <label className={styles.selectLabel}>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => onToggleSelect(image.id)}
+                      aria-label={HISTORY_TEXT.selectAssessment}
+                    />
+                    <span className={styles.selectIndicator} />
+                  </label>
+                )}
                 {assessment && (
                   <div
                     className={`${styles.statusBadge} ${assessment.totalLoss ? styles.totalLoss : styles.repairable}`}
@@ -74,13 +79,15 @@ const HistoryGrid = ({
                     )}
                   </div>
                 )}
-                <button
-                  onClick={() => onDeleteAssessment(image.id)}
-                  className={styles.deleteButton}
-                  title={HISTORY_TEXT.deleteAssessmentTitle}
-                >
-                  <Trash2 size={16} />
-                </button>
+                {canManage && (
+                  <button
+                    onClick={() => onDeleteAssessment(image.id)}
+                    className={styles.deleteButton}
+                    title={HISTORY_TEXT.deleteAssessmentTitle}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
               </div>
             </div>
 
