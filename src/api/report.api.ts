@@ -2,6 +2,7 @@ import { api } from './axios';
 import {
   REPORTS_ALL_PATH,
   REPORTS_DAMAGE_ASSESSMENTS_PATH,
+  REPORTS_ALL_DAMAGE_ASSESSMENTS_PATH,
   buildReportPath,
 } from './report.paths';
 
@@ -42,6 +43,11 @@ export interface DamageReport {
 export const reportApi = {
   async getUserDamageReports(): Promise<DamageReport[]> {
     const response = await api.get<DamageReport[]>(REPORTS_DAMAGE_ASSESSMENTS_PATH);
+    return response.data;
+  },
+  
+  async getAllDamageReports(): Promise<DamageReport[]> {
+    const response = await api.get<DamageReport[]>(REPORTS_ALL_DAMAGE_ASSESSMENTS_PATH);
     return response.data;
   },
 
