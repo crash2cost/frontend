@@ -9,6 +9,14 @@ import styles from './Login.module.css';
 import { API_ROUTES, ERRORS, UI_TEXT } from '../components/common/constants/constants';
 import { Link } from 'react-router-dom';
 
+const ANIMATION_CONFIG = {
+  orb1: { scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3], duration: 8 },
+  orb2: { scale: [1.2, 1, 1.2], opacity: [0.2, 0.4, 0.2], duration: 10 },
+  orb3: { scale: [1, 1.3, 1], opacity: [0.25, 0.45, 0.25], duration: 12 },
+  repeat: Infinity,
+  ease: "easeInOut"
+} as const;
+
 const Login: React.FC = () => {
   const { login } = useAuth();
   const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -42,29 +50,41 @@ const Login: React.FC = () => {
     <div className={styles.container}>
       {/* Animated background elements */}
       <div className={styles.bgOrbs}>
-        <motion.div 
+        <motion.div
           className={styles.orb1}
-          animate={{ 
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
+          animate={{
+            scale: ANIMATION_CONFIG.orb1.scale,
+            opacity: ANIMATION_CONFIG.orb1.opacity,
           }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          transition={{
+            duration: ANIMATION_CONFIG.orb1.duration,
+            repeat: ANIMATION_CONFIG.repeat,
+            ease: ANIMATION_CONFIG.ease
+          }}
         />
-        <motion.div 
+        <motion.div
           className={styles.orb2}
-          animate={{ 
-            scale: [1.2, 1, 1.2],
-            opacity: [0.2, 0.4, 0.2],
+          animate={{
+            scale: ANIMATION_CONFIG.orb2.scale,
+            opacity: ANIMATION_CONFIG.orb2.opacity,
           }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          transition={{
+            duration: ANIMATION_CONFIG.orb2.duration,
+            repeat: ANIMATION_CONFIG.repeat,
+            ease: ANIMATION_CONFIG.ease
+          }}
         />
-        <motion.div 
+        <motion.div
           className={styles.orb3}
-          animate={{ 
-            scale: [1, 1.3, 1],
-            opacity: [0.25, 0.45, 0.25],
+          animate={{
+            scale: ANIMATION_CONFIG.orb3.scale,
+            opacity: ANIMATION_CONFIG.orb3.opacity,
           }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          transition={{
+            duration: ANIMATION_CONFIG.orb3.duration,
+            repeat: ANIMATION_CONFIG.repeat,
+            ease: ANIMATION_CONFIG.ease
+          }}
         />
       </div>
 
