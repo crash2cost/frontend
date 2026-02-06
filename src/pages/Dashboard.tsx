@@ -8,7 +8,7 @@ import DashboardStats from './dashboard/DashboardStats';
 import DashboardUploadSection from './dashboard/DashboardUploadSection';
 import { Toast } from '../components/common';
 import { imageApi, type ImageResponse } from '../api/image.api';
-import { mlApi } from '../api/ml.api';
+import { mlApi, type CarCategory } from '../api/ml.api';
 import { reportApi, type DamageReport } from '../api/report.api';
 import styles from './Dashboard.module.css';
 
@@ -89,11 +89,10 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const processImage = async (imageId: string) => {
+  const processImage = async (imageId: string, carCategory: CarCategory) => {
     setProcessing(prev => new Set(prev).add(imageId));
     try {
-      
-      const assessment = await mlApi.assessDamage(imageId);
+      const assessment = await mlApi.assessDamage(imageId, carCategory);
       setAssessments(prev => new Map(prev).set(imageId, assessment));
     } catch (error) {
       console.error('Failed to process image:', error);

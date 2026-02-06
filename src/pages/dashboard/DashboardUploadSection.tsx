@@ -1,8 +1,9 @@
-import { AlertTriangle, CheckCircle, Sparkles, Upload, XCircle } from 'lucide-react';
+import { AlertTriangle, Car, CheckCircle, Sparkles, Upload, XCircle } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ImageUpload } from '../../components/common';
+import { ImageUpload, Select } from '../../components/common';
 import { imageApi, type ImageResponse } from '../../api/image.api';
+import { CAR_CATEGORY_OPTIONS, type CarCategory } from '../../api/ml.api';
 import type { DamageReport } from '../../api/report.api';
 import styles from '../Dashboard.module.css';
 
@@ -11,7 +12,7 @@ type DashboardUploadSectionProps = {
   processing: Set<string>;
   uploadedImages: ImageResponse[];
   uploading: boolean;
-  onProcessImage: (imageId: string) => void;
+  onProcessImage: (imageId: string, carCategory: CarCategory) => void;
   onUpload: (files: File[]) => void;
 };
 
@@ -25,6 +26,7 @@ const DashboardUploadSection = ({
 }: DashboardUploadSectionProps) => {
   const [imageUrls, setImageUrls] = useState<Map<string, string>>(new Map());
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
+  const [carCategory, setCarCategory] = useState<CarCategory>('sedan');
   const imageUrlRef = useRef<Map<string, string>>(new Map());
   const imageErrorRef = useRef<Set<string>>(new Set());
 
@@ -147,8 +149,17 @@ const DashboardUploadSection = ({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                       >
+                        <div className={styles.carCategorySelect}>
+                          <Select
+                            label="Car Type"
+                            icon={Car}
+                            options={[...CAR_CATEGORY_OPTIONS]}
+                            value={carCategory}
+                            onChange={(value) => setCarCategory(value as CarCategory)}
+                          />
+                        </div>
                         <motion.button
-                          onClick={() => onProcessImage(image.id)}
+                          onClick={() => onProcessImage(image.id, carCategory)}
                           className={styles.mlButton}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
@@ -157,7 +168,7 @@ const DashboardUploadSection = ({
                           Process with AI
                         </motion.button>
                         <p className={styles.mlDescription}>
-                          Click to analyze damage with our ML model
+                          Select your car type and click to analyze damage
                         </p>
                       </motion.div>
                     )}
