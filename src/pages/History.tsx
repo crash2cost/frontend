@@ -88,14 +88,20 @@ const History: React.FC = () => {
       setLoading(false);
     }
 
-    setUploadedImages(images);
-
+    // Build assessment map from reports that have imageId
     const assessmentMap = new Map<string, DamageReport>();
     reports.forEach(report => {
-      assessmentMap.set(report.imageId, report);
+      if (report.imageId) {
+        assessmentMap.set(report.imageId, report);
+      }
     });
     setAssessments(assessmentMap);
-    const availableImageIds = new Set(images.map(image => image.id));
+
+    // Filter images to only show those with assessments (actual claims)
+    const imagesWithAssessments = images.filter(image => assessmentMap.has(image.id));
+    setUploadedImages(imagesWithAssessments);
+
+    const availableImageIds = new Set(imagesWithAssessments.map(image => image.id));
     setSelectedImageIds(prev => {
       const next = new Set<string>();
       prev.forEach(id => {
@@ -231,7 +237,7 @@ const History: React.FC = () => {
           >
             <motion.div variants={itemVariants}>
               <HistorySummary
-                totalAssessments={uploadedImages.length}
+                totalAssessments={assessments.size}
                 totalCost={totalCost}
                 totalLossCount={totalLossCount}
               />
