@@ -30,6 +30,14 @@ const itemVariants = {
   }
 };
 
+const ANIMATION_CONFIG = {
+  orb1: { scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3], duration: 8 },
+  orb2: { scale: [1.2, 1, 1.2], opacity: [0.2, 0.4, 0.2], duration: 10 },
+  orb3: { scale: [1, 1.3, 1], opacity: [0.25, 0.45, 0.25], duration: 12 },
+  repeat: Infinity,
+  ease: "easeInOut"
+} as const;
+
 const SignUp: React.FC = () => {
   const { login } = useAuth();
   const [formData, setFormData] = useState<SignUpFormData>({
@@ -91,10 +99,45 @@ const SignUp: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      {/* Animated background orbs */}
-      <div className={styles.orb1}></div>
-      <div className={styles.orb2}></div>
-      <div className={styles.orb3}></div>
+      {/* Animated background elements */}
+      <div className={styles.bgOrbs}>
+        <motion.div
+          className={styles.orb1}
+          animate={{
+            scale: ANIMATION_CONFIG.orb1.scale,
+            opacity: ANIMATION_CONFIG.orb1.opacity,
+          }}
+          transition={{
+            duration: ANIMATION_CONFIG.orb1.duration,
+            repeat: ANIMATION_CONFIG.repeat,
+            ease: ANIMATION_CONFIG.ease
+          }}
+        />
+        <motion.div
+          className={styles.orb2}
+          animate={{
+            scale: ANIMATION_CONFIG.orb2.scale,
+            opacity: ANIMATION_CONFIG.orb2.opacity,
+          }}
+          transition={{
+            duration: ANIMATION_CONFIG.orb2.duration,
+            repeat: ANIMATION_CONFIG.repeat,
+            ease: ANIMATION_CONFIG.ease
+          }}
+        />
+        <motion.div
+          className={styles.orb3}
+          animate={{
+            scale: ANIMATION_CONFIG.orb3.scale,
+            opacity: ANIMATION_CONFIG.orb3.opacity,
+          }}
+          transition={{
+            duration: ANIMATION_CONFIG.orb3.duration,
+            repeat: ANIMATION_CONFIG.repeat,
+            ease: ANIMATION_CONFIG.ease
+          }}
+        />
+      </div>
 
       <motion.div
         className={styles.card}
@@ -102,7 +145,7 @@ const SignUp: React.FC = () => {
         initial="hidden"
         animate="visible"
       >
-        <div className={styles.glowEffect}></div>
+        <div className={styles.cardGlow} />
 
         <motion.div className={styles.header} variants={itemVariants}>
           <div className={styles.logoIcon}>
