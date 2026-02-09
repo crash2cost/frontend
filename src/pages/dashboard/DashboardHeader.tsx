@@ -1,6 +1,8 @@
-import { History, LogOut, Zap } from 'lucide-react';
+import { History, LogOut, User, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
-import styles from '../Dashboard.module.css';
+import { STORAGE_KEYS } from '../../constants/api.constants';
+import { getTokenUsername } from '../../utils/jwt';
+import styles from './Dashboard.module.css';
 
 type DashboardHeaderProps = {
   onGoToHistory: () => void;
@@ -11,6 +13,9 @@ const DashboardHeader = ({
   onGoToHistory,
   onLogout,
 }: DashboardHeaderProps) => {
+  const token = localStorage.getItem(STORAGE_KEYS.authToken);
+  const username = token ? getTokenUsername(token) : null;
+
   return (
     <div className={styles.header}>
       <div className={styles.headerLeft}>
@@ -21,6 +26,12 @@ const DashboardHeader = ({
         <p className={styles.subtitle}>Welcome back! Here's your crash analytics overview</p>
       </div>
       <div className={styles.headerButtons}>
+        {username && (
+          <div className={styles.userBadge}>
+            <User size={16} />
+            <span>{username}</span>
+          </div>
+        )}
         <motion.button
           onClick={onGoToHistory}
           className={styles.historyButton}

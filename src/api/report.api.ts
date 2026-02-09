@@ -42,20 +42,20 @@ export interface DamageReport {
 
 export const reportApi = {
   async getUserDamageReports(): Promise<DamageReport[]> {
-    const response = await api.get<DamageReport[]>(REPORTS_DAMAGE_ASSESSMENTS_PATH);
+    const response = await api.get<DamageReport[]>('/api/assessments');
     return response.data;
   },
-  
+
   async getAllDamageReports(): Promise<DamageReport[]> {
-    const response = await api.get<DamageReport[]>(REPORTS_ALL_DAMAGE_ASSESSMENTS_PATH);
+    const response = await api.get<DamageReport[]>('/api/assessments/all');
     return response.data;
   },
 
   async deleteReport(reportId: string): Promise<void> {
-    await api.delete(buildReportPath(reportId));
+    await api.delete(`/api/assessments/${reportId}`);
   },
 
   async deleteAllReports(): Promise<void> {
-    await api.delete(REPORTS_ALL_PATH);
+    await api.delete('/api/assessments/all');
   }
 };

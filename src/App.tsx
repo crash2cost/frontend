@@ -1,8 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
-import SignUp from './pages/SignUp';
-import Dashboard from './pages/Dashboard';
-import History from './pages/History';
+import Login from './pages/login/Login';
+import SignUp from './pages/signup/SignUp';
+import Dashboard from './pages/dashboard/Dashboard';
+import History from './pages/history/History';
 import { ProtectedRoute } from './components/guard';
 
 function App() {

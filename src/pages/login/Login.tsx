@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../hooks';
-import { api } from '../api';
-import { Button, Input } from '../components/common';
+import { useAuth } from '../../hooks';
+import { api } from '../../api';
+import { Button, Input } from '../../components/common';
 import { User, Lock, AlertCircle, Car, Sparkles, Shield, Zap } from 'lucide-react';
-import type { AuthResponse } from '../types';
+import type { AuthResponse } from '../../types';
 import styles from './Login.module.css';
-import { API_ROUTES, ERRORS, UI_TEXT } from '../components/common/constants/constants';
+import { API_ROUTES, ERRORS, UI_TEXT } from '../../components/common/constants/constants';
 import { Link } from 'react-router-dom';
 
 const ANIMATION_CONFIG = {

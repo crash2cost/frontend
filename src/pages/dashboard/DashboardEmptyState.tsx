@@ -1,6 +1,6 @@
 import { ImagePlus } from 'lucide-react';
 import { motion } from 'framer-motion';
-import styles from '../Dashboard.module.css';
+import styles from './Dashboard.module.css';
 
 const DashboardEmptyState = () => {
   return (

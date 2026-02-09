@@ -1,8 +1,10 @@
 import { AlertTriangle, Calendar, CheckCircle, Trash2, XCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import type { DamageReport } from '../../api/report.api';
 import type { ImageResponse } from '../../api/image.api';
-import styles from '../History.module.css';
-import { HISTORY_CLASS_KEYS, HISTORY_TEXT } from '../history.constants';
+import { imageApi } from '../../api/image.api';
+import styles from './History.module.css';
+import { HISTORY_CLASS_KEYS, HISTORY_TEXT } from './history.constants';
 
 type HistoryGridProps = {
   uploadedImages: ImageResponse[];
@@ -23,6 +25,39 @@ const HistoryGrid = ({
   onGoToDashboard,
   readOnly = false,
 }: HistoryGridProps) => {
+  const [imageUrls, setImageUrls] = useState<Map<string, string>>(new Map());
+
+  useEffect(() => {
+    let isMounted = true;
+    const blobUrls: string[] = [];
+
+    const loadImages = async () => {
+      for (const image of uploadedImages) {
+        try {
+          const blob = await imageApi.getImageBlob(image.id);
+          if (isMounted) {
+            const url = URL.createObjectURL(blob);
+            blobUrls.push(url);
+            setImageUrls(prev => {
+              const next = new Map(prev);
+              next.set(image.id, url);
+              return next;
+            });
+          }
+        } catch (error) {
+          console.error(`Failed to load image ${image.id}:`, error);
+        }
+      }
+    };
+
+    loadImages();
+
+    return () => {
+      isMounted = false;
+      blobUrls.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [uploadedImages]);
+
   if (uploadedImages.length === 0) {
     return (
       <div className={styles.emptyState}>
@@ -45,6 +80,16 @@ const HistoryGrid = ({
 
         return (
           <div key={image.id} className={styles.historyCard}>
+            <div className={styles.vehicleImage}>
+              {imageUrls.has(image.id) ? (
+                <img
+                  src={imageUrls.get(image.id)}
+                  alt={image.filename}
+                />
+              ) : (
+                <div className={styles.imagePlaceholder}>Loading...</div>
+              )}
+            </div>
             <div className={styles.cardHeader}>
               <div className={styles.cardDate}>
                 <Calendar size={16} />

@@ -1,11 +1,13 @@
-import { AlertTriangle, Car, CheckCircle, Sparkles, Upload, XCircle } from 'lucide-react';
+import { AlertTriangle, Car, CheckCircle, Save, Sparkles, Upload, XCircle } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ImageUpload, Select } from '../../components/common';
 import { imageApi, type ImageResponse } from '../../api/image.api';
+import { assessmentApi } from '../../api/assessment.api';
 import { CAR_CATEGORY_OPTIONS, type CarCategory } from '../../api/ml.api';
 import type { DamageReport } from '../../api/report.api';
-import styles from '../Dashboard.module.css';
+import styles from './Dashboard.module.css';
 
 type DashboardUploadSectionProps = {
   assessments: Map<string, DamageReport>;
@@ -24,9 +26,11 @@ const DashboardUploadSection = ({
   onProcessImage,
   onUpload,
 }: DashboardUploadSectionProps) => {
+  const navigate = useNavigate();
   const [imageUrls, setImageUrls] = useState<Map<string, string>>(new Map());
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
   const [carCategory, setCarCategory] = useState<CarCategory>('sedan');
+  const [saving, setSaving] = useState<Set<string>>(new Set());
   const imageUrlRef = useRef<Map<string, string>>(new Map());
   const imageErrorRef = useRef<Set<string>>(new Set());
 
@@ -95,6 +99,29 @@ const DashboardUploadSection = ({
       });
     };
   }, [uploadedIds]);
+
+  const handleSaveAssessment = async (imageId: string, assessment: DamageReport) => {
+    if (saving.has(imageId)) return;
+
+    setSaving(new Set(saving).add(imageId));
+    try {
+      await assessmentApi.saveAssessment({
+        imageId,
+        damageAreas: assessment.damageAreas,
+        totalCost: assessment.totalCost,
+        totalLoss: assessment.totalLoss,
+        assessmentDate: new Date().toISOString(),
+      });
+
+      alert('Assessment saved successfully!');
+      navigate('/history');
+    } catch (error) {
+      console.error('Failed to save assessment:', error);
+      alert('Failed to save assessment. Please try again.');
+    } finally {
+      setSaving(new Set([...saving].filter(id => id !== imageId)));
+    }
+  };
 
   return (
     <div className={styles.content}>
@@ -257,6 +284,17 @@ const DashboardUploadSection = ({
                             : 'Recently'}
                         </span>
                       </div>
+
+                      <motion.button
+                        onClick={() => handleSaveAssessment(image.id, assessment)}
+                        className={styles.saveButton}
+                        disabled={saving.has(image.id)}
+                        whileHover={{ scale: saving.has(image.id) ? 1 : 1.02 }}
+                        whileTap={{ scale: saving.has(image.id) ? 1 : 0.98 }}
+                      >
+                        <Save size={20} />
+                        {saving.has(image.id) ? 'Saving...' : 'Save Assessment'}
+                      </motion.button>
                       </motion.div>
                     )}
                   </AnimatePresence>

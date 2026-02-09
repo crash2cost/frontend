@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../hooks';
-import DashboardEmptyState from './dashboard/DashboardEmptyState';
-import DashboardHeader from './dashboard/DashboardHeader';
-import DashboardStats from './dashboard/DashboardStats';
-import DashboardUploadSection from './dashboard/DashboardUploadSection';
-import { Toast } from '../components/common';
-import { imageApi, type ImageResponse } from '../api/image.api';
-import { mlApi, type CarCategory } from '../api/ml.api';
-import { reportApi, type DamageReport } from '../api/report.api';
+import { useAuth } from '../../hooks';
+import DashboardEmptyState from './DashboardEmptyState';
+import DashboardHeader from './DashboardHeader';
+import DashboardStats from './DashboardStats';
+import DashboardUploadSection from './DashboardUploadSection';
+import { Toast } from '../../components/common';
+import { imageApi, type ImageResponse } from '../../api/image.api';
+import { mlApi, type CarCategory } from '../../api/ml.api';
+import { reportApi, type DamageReport } from '../../api/report.api';
 import styles from './Dashboard.module.css';
 
 const pageVariants = {

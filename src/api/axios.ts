@@ -30,3 +30,18 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 403 || error.response?.status === 401) {
+      const requestUrl = error.config?.url ?? '';
+      const isAuthRequest = requestUrl.startsWith(API_BASE_PATHS.auth);
+      if (!isAuthRequest) {
+        localStorage.removeItem(STORAGE_KEYS.authToken);
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);

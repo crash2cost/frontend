@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { useAuth } from '../hooks';
-import { api } from '../api';
-import { Button, Input, PasswordRequirements } from '../components/common';
+import { useAuth } from '../../hooks';
+import { api } from '../../api';
+import { Button, Input, PasswordRequirements } from '../../components/common';
 import { User, Lock, Mail, AlertCircle, CheckCircle, Zap, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { AuthResponse } from '../types';
+import type { AuthResponse } from '../../types';
 import styles from './SignUp.module.css';
 import { Link } from 'react-router-dom';
-import { API_ROUTES, ERRORS, MESSAGES, UI_TEXT, VALIDATION } from '../components/common/constants/constants';
+import { API_ROUTES, ERRORS, MESSAGES, UI_TEXT, VALIDATION } from '../../components/common/constants/constants';
 import type { SignUpFormData } from './SignUp.types';
 
 const containerVariants = {

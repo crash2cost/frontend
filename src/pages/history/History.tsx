@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { imageApi } from '../api/image.api';
-import { reportApi, type DamageReport } from '../api/report.api';
-import type { ImageResponse } from '../api/image.api';
-import { STORAGE_KEYS } from '../constants/api.constants';
-import { getTokenRole } from '../utils/jwt';
-import HistoryGrid from './history/HistoryGrid';
-import HistoryHeader from './history/HistoryHeader';
-import HistorySummary from './history/HistorySummary';
+import { imageApi } from '../../api/image.api';
+import { reportApi, type DamageReport } from '../../api/report.api';
+import type { ImageResponse } from '../../api/image.api';
+import { STORAGE_KEYS } from '../../constants/api.constants';
+import { getTokenRole } from '../../utils/jwt';
+import HistoryGrid from './HistoryGrid';
+import HistoryHeader from './HistoryHeader';
+import HistorySummary from './HistorySummary';
 import {
   HISTORY_ALERT_MESSAGES,
   HISTORY_LOG_MESSAGES,
@@ -88,20 +88,44 @@ const History: React.FC = () => {
       setLoading(false);
     }
 
-    // Build assessment map from reports that have imageId
+    // Build assessment map from reports that have imageId (keep most recent per image)
     const assessmentMap = new Map<string, DamageReport>();
     reports.forEach(report => {
       if (report.imageId) {
-        assessmentMap.set(report.imageId, report);
+        const existing = assessmentMap.get(report.imageId);
+        // Keep the most recent assessment (or first if no date comparison possible)
+        if (!existing || (report.assessmentDate && existing.assessmentDate &&
+            new Date(report.assessmentDate) > new Date(existing.assessmentDate))) {
+          assessmentMap.set(report.imageId, report);
+        }
       }
     });
     setAssessments(assessmentMap);
 
-    // Filter images to only show those with assessments (actual claims)
-    const imagesWithAssessments = images.filter(image => assessmentMap.has(image.id));
-    setUploadedImages(imagesWithAssessments);
+    // Build image map for quick lookup
+    const imageMap = new Map<string, ImageResponse>();
+    images.forEach(img => {
+      imageMap.set(img.id, img);
+    });
 
-    const availableImageIds = new Set(imagesWithAssessments.map(image => image.id));
+    // Create display list from unique assessments (guarantees saved assessments always show)
+    const assessmentImages: ImageResponse[] = Array.from(assessmentMap.values())
+      .filter(report => report.imageId)
+      .map(report => {
+        // Use the actual image data if available, otherwise create placeholder
+        const matchingImage = imageMap.get(report.imageId!);
+        return matchingImage || {
+          id: report.imageId!,
+          filename: 'Assessment Image',
+          contentType: 'image/*',
+          size: 0,
+          uploadDate: report.assessmentDate || new Date().toISOString(),
+        };
+      });
+
+    setUploadedImages(assessmentImages);
+
+    const availableImageIds = new Set(assessmentImages.map(image => image.id));
     setSelectedImageIds(prev => {
       const next = new Set<string>();
       prev.forEach(id => {
@@ -231,8 +255,9 @@ const History: React.FC = () => {
         ) : (
           <motion.div
             key="content"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            variants={pageVariants}
+            initial="hidden"
+            animate="visible"
             exit={{ opacity: 0 }}
           >
             <motion.div variants={itemVariants}>

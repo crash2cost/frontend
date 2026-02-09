@@ -1,6 +1,8 @@
-import { ArrowLeft } from 'lucide-react';
-import styles from '../History.module.css';
-import { HISTORY_TEXT } from '../history.constants';
+import { ArrowLeft, User } from 'lucide-react';
+import { STORAGE_KEYS } from '../../constants/api.constants';
+import { getTokenUsername } from '../../utils/jwt';
+import styles from './History.module.css';
+import { HISTORY_TEXT } from './history.constants';
 
 type HistoryHeaderProps = {
   onBack: () => void;
@@ -21,6 +23,8 @@ const HistoryHeader = ({
 }: HistoryHeaderProps) => {
   const hasSelection = selectedCount > 0;
   const allSelected = totalSelectable > 0 && selectedCount === totalSelectable;
+  const token = localStorage.getItem(STORAGE_KEYS.authToken);
+  const username = token ? getTokenUsername(token) : null;
 
   return (
     <div className={styles.header}>
@@ -28,6 +32,12 @@ const HistoryHeader = ({
         <ArrowLeft size={20} />
         {HISTORY_TEXT.backToDashboard}
       </button>
+      {username && (
+        <div className={styles.userBadge}>
+          <User size={16} />
+          <span>{username}</span>
+        </div>
+      )}
       <div className={styles.headerContent}>
         <h1 className={styles.title}>{HISTORY_TEXT.title}</h1>
         <p className={styles.subtitle}>{HISTORY_TEXT.subtitle}</p>

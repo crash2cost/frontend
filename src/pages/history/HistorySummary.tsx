@@ -1,5 +1,5 @@
-import styles from '../History.module.css';
-import { HISTORY_TEXT } from '../history.constants';
+import styles from './History.module.css';
+import { HISTORY_TEXT } from './history.constants';
 
 type HistorySummaryProps = {
   totalAssessments: number;
