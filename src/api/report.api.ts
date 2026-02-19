@@ -1,10 +1,4 @@
 import { api } from './axios';
-import {
-  REPORTS_ALL_PATH,
-  REPORTS_DAMAGE_ASSESSMENTS_PATH,
-  REPORTS_ALL_DAMAGE_ASSESSMENTS_PATH,
-  buildReportPath,
-} from './report.paths';
 
 export interface DamageArea {
   area: string;

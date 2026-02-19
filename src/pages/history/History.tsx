@@ -88,12 +88,10 @@ const History: React.FC = () => {
       setLoading(false);
     }
 
-    // Build assessment map from reports that have imageId (keep most recent per image)
     const assessmentMap = new Map<string, DamageReport>();
     reports.forEach(report => {
       if (report.imageId) {
         const existing = assessmentMap.get(report.imageId);
-        // Keep the most recent assessment (or first if no date comparison possible)
         if (!existing || (report.assessmentDate && existing.assessmentDate &&
             new Date(report.assessmentDate) > new Date(existing.assessmentDate))) {
           assessmentMap.set(report.imageId, report);
@@ -102,17 +100,14 @@ const History: React.FC = () => {
     });
     setAssessments(assessmentMap);
 
-    // Build image map for quick lookup
     const imageMap = new Map<string, ImageResponse>();
     images.forEach(img => {
       imageMap.set(img.id, img);
     });
 
-    // Create display list from unique assessments (guarantees saved assessments always show)
     const assessmentImages: ImageResponse[] = Array.from(assessmentMap.values())
       .filter(report => report.imageId)
       .map(report => {
-        // Use the actual image data if available, otherwise create placeholder
         const matchingImage = imageMap.get(report.imageId!);
         return matchingImage || {
           id: report.imageId!,

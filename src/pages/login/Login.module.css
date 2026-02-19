@@ -9,7 +9,6 @@
   overflow: hidden;
 }
 
-/* Animated background orbs */
 .bgOrbs {
   position: fixed;
   inset: 0;
@@ -250,7 +249,6 @@
   text-decoration: none;
 }
 
-/* Responsive */
 @media (max-width: 480px) {
   .card {
     padding: 2rem;

@@ -48,7 +48,6 @@ const Login: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      {/* Animated background elements */}
       <div className={styles.bgOrbs}>
         <motion.div
           className={styles.orb1}
@@ -94,7 +93,6 @@ const Login: React.FC = () => {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
       >
-        {/* Glow effect */}
         <div className={styles.cardGlow} />
         
         <motion.div 

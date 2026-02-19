@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../hooks';
 import { api } from '../../api';
 import { Button, Input, PasswordRequirements } from '../../components/common';
-import { User, Lock, Mail, AlertCircle, CheckCircle, Zap, Shield } from 'lucide-react';
+import { User, Lock, Mail, AlertCircle, CheckCircle, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { AuthResponse } from '../../types';
 import styles from './SignUp.module.css';
@@ -35,8 +35,8 @@ const ANIMATION_CONFIG = {
   orb2: { scale: [1.2, 1, 1.2], opacity: [0.2, 0.4, 0.2], duration: 10 },
   orb3: { scale: [1, 1.3, 1], opacity: [0.25, 0.45, 0.25], duration: 12 },
   repeat: Infinity,
-  ease: "easeInOut"
-} as const;
+  ease: "easeInOut" as const
+};
 
 const SignUp: React.FC = () => {
   const { login } = useAuth();
@@ -85,8 +85,7 @@ const SignUp: React.FC = () => {
       console.error(err);
       const error = err as { response?: { data?: { message?: string; password?: string; username?: string; email?: string } } };
       
-      // Check for validation errors from backend
-      const validationError = error.response?.data?.password || 
+      const validationError = error.response?.data?.password ||
                              error.response?.data?.username || 
                              error.response?.data?.email ||
                              error.response?.data?.message;
@@ -99,7 +98,6 @@ const SignUp: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      {/* Animated background elements */}
       <div className={styles.bgOrbs}>
         <motion.div
           className={styles.orb1}

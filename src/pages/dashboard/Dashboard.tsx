@@ -48,39 +48,31 @@ const Dashboard: React.FC = () => {
   }, [toast]);
 
   useEffect(() => {
-    loadImages();
+    loadStats();
   }, []);
 
-  const loadImages = async () => {
-    let images: ImageResponse[] = [];
-    let reports: DamageReport[] = [];
-
+  const loadStats = async () => {
     try {
-      images = await imageApi.getMyImages();
-      reports = await reportApi.getUserDamageReports();
+      const reports = await reportApi.getUserDamageReports();
+      const assessmentMap = new Map<string, DamageReport>();
+      reports.forEach(report => {
+        assessmentMap.set(report.imageId, report);
+      });
+      setAssessments(assessmentMap);
     } catch (error) {
-      console.error('Failed to load images:', error);
-      setToast({ message: 'Failed to load your images. Please refresh.', variant: 'error' });
-      return;
+      console.error('Failed to load reports:', error);
     }
-
-    setUploadedImages(images);
-
-    
-    const assessmentMap = new Map<string, DamageReport>();
-    reports.forEach(report => {
-      assessmentMap.set(report.imageId, report);
-    });
-    setAssessments(assessmentMap);
   };
 
   const handleUpload = async (files: File[]) => {
     setUploading(true);
     try {
+      const newImages: ImageResponse[] = [];
       for (const file of files) {
-        await imageApi.uploadImage(file);
+        const uploaded = await imageApi.uploadImage(file);
+        newImages.push(uploaded);
       }
-      await loadImages();
+      setUploadedImages(prev => [...newImages, ...prev]);
     } catch (error) {
       console.error('Failed to upload images:', error);
       setToast({ message: 'Failed to upload images. Please try again.', variant: 'error' });
