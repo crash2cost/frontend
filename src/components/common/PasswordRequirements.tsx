@@ -6,12 +6,12 @@ import type { Requirement } from './PasswordRequirementsRequirement.types';
 
 const requirements: Requirement[] = [
   {
-    label: 'At least 6 characters',
-    test: (pwd) => pwd.length >= 6
+    label: 'At least 8 characters',
+    test: (pwd) => pwd.length >= 8
   },
   {
-    label: 'Maximum 16 characters',
-    test: (pwd) => pwd.length <= 16
+    label: 'Maximum 64 characters',
+    test: (pwd) => pwd.length <= 64
   },
   {
     label: 'Contains uppercase letter (A-Z)',
