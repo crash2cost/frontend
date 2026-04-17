@@ -247,6 +247,12 @@ const DashboardUploadSection = ({
                         </div>
                       </div>
 
+                      {assessment.assessmentSource === 'FALLBACK' && (
+                        <div className={styles.uploadingMessage}>
+                          AI service was unavailable. Showing an estimated fallback assessment.
+                        </div>
+                      )}
+
                       <div className={styles.brokenPartsList}>
                         <h4 className={styles.partsTitle}>
                           <AlertTriangle size={20} />

@@ -17,6 +17,40 @@ const ANIMATION_CONFIG = {
   ease: "easeInOut"
 } as const;
 
+const getApiErrorMessage = (err: unknown): string | null => {
+  const error = err as {
+    message?: string;
+    response?: {
+      status?: number;
+      data?: unknown;
+    };
+  };
+
+  const data = error.response?.data;
+
+  if (typeof data === 'string' && data.trim()) {
+    return data;
+  }
+
+  if (data && typeof data === 'object') {
+    const map = data as Record<string, unknown>;
+    const message = map.message;
+    if (typeof message === 'string' && message.trim()) {
+      return message;
+    }
+  }
+
+  if (error.message === 'Network Error') {
+    return 'Network error. Please make sure backend services are running.';
+  }
+
+  if (typeof error.message === 'string' && error.message.trim()) {
+    return error.message;
+  }
+
+  return null;
+};
+
 const Login: React.FC = () => {
   const { login } = useAuth();
   const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -33,8 +67,7 @@ const Login: React.FC = () => {
       login(response.data.tokenAccess);
     } catch (err) {
       console.error(err);
-      const error = err as { response?: { data?: { message?: string } } };
-      setError(error.response?.data?.message || ERRORS.FAILED_LOGIN);
+      setError(getApiErrorMessage(err) || ERRORS.FAILED_LOGIN);
     } finally {
       setLoading(false);
     }

@@ -3,14 +3,14 @@ import { useAuth } from '../../hooks';
 import { api } from '../../api';
 import { Button, Input, PasswordRequirements } from '../../components/common';
 import { User, Lock, Mail, AlertCircle, CheckCircle, Shield } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import type { AuthResponse } from '../../types';
 import styles from './SignUp.module.css';
 import { Link } from 'react-router-dom';
 import { API_ROUTES, ERRORS, MESSAGES, UI_TEXT, VALIDATION } from '../../components/common/constants/constants';
 import type { SignUpFormData } from './SignUp.types';
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -21,12 +21,12 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }
+    transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] }
   }
 };
 
@@ -36,6 +36,41 @@ const ANIMATION_CONFIG = {
   orb3: { scale: [1, 1.3, 1], opacity: [0.25, 0.45, 0.25], duration: 12 },
   repeat: Infinity,
   ease: "easeInOut" as const
+};
+
+const getApiErrorMessage = (err: unknown): string | null => {
+  const error = err as {
+    message?: string;
+    response?: {
+      status?: number;
+      data?: unknown;
+    };
+  };
+
+  const data = error.response?.data;
+
+  if (typeof data === 'string' && data.trim()) {
+    return data;
+  }
+
+  if (data && typeof data === 'object') {
+    const map = data as Record<string, unknown>;
+    const candidates = [map.password, map.username, map.email, map.message];
+    const firstText = candidates.find((v) => typeof v === 'string' && v.trim()) as string | undefined;
+    if (firstText) {
+      return firstText;
+    }
+  }
+
+  if (error.response?.status === 409) {
+    return 'Username or email already exists';
+  }
+
+  if (typeof error.message === 'string' && error.message.trim()) {
+    return error.message;
+  }
+
+  return null;
 };
 
 const SignUp: React.FC = () => {
@@ -83,14 +118,7 @@ const SignUp: React.FC = () => {
       }, VALIDATION.SUCCESS_REDIRECT_DELAY);
     } catch (err) {
       console.error(err);
-      const error = err as { response?: { data?: { message?: string; password?: string; username?: string; email?: string } } };
-      
-      const validationError = error.response?.data?.password ||
-                             error.response?.data?.username || 
-                             error.response?.data?.email ||
-                             error.response?.data?.message;
-      
-      setError(validationError || ERRORS.FAILED_SIGNUP);
+      setError(getApiErrorMessage(err) || ERRORS.FAILED_SIGNUP);
     } finally {
       setLoading(false);
     }

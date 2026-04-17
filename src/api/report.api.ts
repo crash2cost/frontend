@@ -30,6 +30,8 @@ export interface DamageReport {
   totalCost: number;
   totalLoss: boolean;
   assessmentDate?: string;
+  assessmentSource?: 'ML' | 'FALLBACK' | 'MANUAL';
+  fallbackReason?: string;
   eventDate?: string;
   status?: string;
 }
