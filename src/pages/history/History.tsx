@@ -44,6 +44,7 @@ const History: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedImageIds, setSelectedImageIds] = useState<Set<string>>(new Set());
   const [readOnly, setReadOnly] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     loadHistory();
@@ -58,9 +59,11 @@ const History: React.FC = () => {
       const role = token ? getTokenRole(token) : null;
       const isAdmin = role?.toUpperCase() === 'ADMIN';
       setReadOnly(isAdmin);
+      setIsAdmin(isAdmin);
 
       if (isAdmin) {
-        reports = await reportApi.getAllDamageReports();
+        const pageResponse = await reportApi.getAllDamageReports();
+        reports = pageResponse.content;
         const imageMap = new Map<string, ImageResponse>();
         reports.forEach(report => {
           if (!report.imageId) {
@@ -232,6 +235,7 @@ const History: React.FC = () => {
           selectedCount={selectedImageIds.size}
           totalSelectable={totalSelectable}
           readOnly={readOnly}
+          isAdmin={isAdmin}
         />
       </motion.div>
 
@@ -271,6 +275,7 @@ const History: React.FC = () => {
                 selectedReportIds={selectedImageIds}
                 onGoToDashboard={() => navigate(HISTORY_ROUTES.dashboard)}
                 readOnly={readOnly}
+                isAdmin={isAdmin}
               />
             </motion.div>
           </motion.div>

@@ -36,14 +36,27 @@ export interface DamageReport {
   status?: string;
 }
 
+export interface PageResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  number: number;
+  size: number;
+  first: boolean;
+  last: boolean;
+}
+
 export const reportApi = {
   async getUserDamageReports(): Promise<DamageReport[]> {
     const response = await api.get<DamageReport[]>('/api/assessments');
     return response.data;
   },
 
-  async getAllDamageReports(): Promise<DamageReport[]> {
-    const response = await api.get<DamageReport[]>('/api/assessments/all');
+  async getAllDamageReports(page = 0, size = 100): Promise<PageResponse<DamageReport>> {
+    const response = await api.get<PageResponse<DamageReport>>(
+      '/api/reports/damage-assessments/all',
+      { params: { page, size } }
+    );
     return response.data;
   },
 
