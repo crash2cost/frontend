@@ -36,6 +36,11 @@ export const HISTORY_TEXT = {
   damagedPartsLabel: 'Damaged Parts',
   assessmentNotAvailable: 'Assessment not available',
   levelPrefix: 'Lvl ',
+  adminSubtitle: 'View all system damage assessments',
+  adminBadge: 'Admin View',
+  adminEmptyTitle: 'No assessments in system',
+  adminEmptyText: 'No damage assessments have been submitted yet',
+  ownerLabel: 'Owner',
 } as const;
 
 export const HISTORY_CLASS_KEYS = {

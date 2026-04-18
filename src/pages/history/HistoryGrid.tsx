@@ -1,4 +1,4 @@
-import { AlertTriangle, Calendar, CheckCircle, Trash2, XCircle } from 'lucide-react';
+import { AlertTriangle, Calendar, CheckCircle, Trash2, User, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { DamageReport } from '../../api/report.api';
 import type { ImageResponse } from '../../api/image.api';
@@ -14,6 +14,7 @@ type HistoryGridProps = {
   selectedReportIds: Set<string>;
   onGoToDashboard: () => void;
   readOnly?: boolean;
+  isAdmin?: boolean;
 };
 
 const HistoryGrid = ({
@@ -24,6 +25,7 @@ const HistoryGrid = ({
   selectedReportIds,
   onGoToDashboard,
   readOnly = false,
+  isAdmin = false,
 }: HistoryGridProps) => {
   const [imageUrls, setImageUrls] = useState<Map<string, string>>(new Map());
 
@@ -62,8 +64,8 @@ const HistoryGrid = ({
     return (
       <div className={styles.emptyState}>
         <Calendar size={64} className={styles.emptyIcon} />
-        <h3 className={styles.emptyTitle}>{HISTORY_TEXT.emptyTitle}</h3>
-        <p className={styles.emptyText}>{HISTORY_TEXT.emptyText}</p>
+        <h3 className={styles.emptyTitle}>{isAdmin ? HISTORY_TEXT.adminEmptyTitle : HISTORY_TEXT.emptyTitle}</h3>
+        <p className={styles.emptyText}>{isAdmin ? HISTORY_TEXT.adminEmptyText : HISTORY_TEXT.emptyText}</p>
         <button onClick={onGoToDashboard} className={styles.dashboardButton}>
           {HISTORY_TEXT.goToDashboard}
         </button>
@@ -135,6 +137,13 @@ const HistoryGrid = ({
                 )}
               </div>
             </div>
+
+            {isAdmin && assessment?.username && (
+              <div className={styles.ownerBadge}>
+                <User size={14} />
+                <span>{assessment.username}</span>
+              </div>
+            )}
 
             {assessment ? (
               <>

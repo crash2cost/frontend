@@ -1,4 +1,4 @@
-import { ArrowLeft, User } from 'lucide-react';
+import { ArrowLeft, Shield, User } from 'lucide-react';
 import { STORAGE_KEYS } from '../../constants/api.constants';
 import { getTokenUsername } from '../../utils/jwt';
 import styles from './History.module.css';
@@ -11,6 +11,7 @@ type HistoryHeaderProps = {
   selectedCount: number;
   totalSelectable: number;
   readOnly?: boolean;
+  isAdmin?: boolean;
 };
 
 const HistoryHeader = ({
@@ -20,6 +21,7 @@ const HistoryHeader = ({
   selectedCount,
   totalSelectable,
   readOnly = false,
+  isAdmin = false,
 }: HistoryHeaderProps) => {
   const hasSelection = selectedCount > 0;
   const allSelected = totalSelectable > 0 && selectedCount === totalSelectable;
@@ -38,9 +40,15 @@ const HistoryHeader = ({
           <span>{username}</span>
         </div>
       )}
+      {isAdmin && (
+        <div className={styles.adminBadge}>
+          <Shield size={16} />
+          <span>{HISTORY_TEXT.adminBadge}</span>
+        </div>
+      )}
       <div className={styles.headerContent}>
         <h1 className={styles.title}>{HISTORY_TEXT.title}</h1>
-        <p className={styles.subtitle}>{HISTORY_TEXT.subtitle}</p>
+        <p className={styles.subtitle}>{isAdmin ? HISTORY_TEXT.adminSubtitle : HISTORY_TEXT.subtitle}</p>
       </div>
       {!readOnly && (
         <div className={styles.headerActions}>

@@ -28,6 +28,33 @@
   font-weight: 500;
 }
 
+.adminBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 10px;
+  color: #a78bfa;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.ownerBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 1rem;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 8px;
+  color: #93c5fd;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
 .backButton {
   display: inline-flex;
   align-items: center;
