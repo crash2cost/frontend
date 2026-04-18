@@ -165,6 +165,7 @@ const Dashboard: React.FC = () => {
           uploading={uploading}
           onProcessImage={processImage}
           onUpload={handleUpload}
+          onToast={setToast}
         />
       </motion.div>
 

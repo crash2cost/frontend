@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { imageApi } from '../../api/image.api';
 import { reportApi, type DamageReport } from '../../api/report.api';
 import type { ImageResponse } from '../../api/image.api';
+import { Toast } from '../../components/common';
 import { STORAGE_KEYS } from '../../constants/api.constants';
 import { getTokenRole } from '../../utils/jwt';
 import HistoryGrid from './HistoryGrid';
@@ -45,6 +46,13 @@ const History: React.FC = () => {
   const [selectedImageIds, setSelectedImageIds] = useState<Set<string>>(new Set());
   const [readOnly, setReadOnly] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [toast, setToast] = useState<{ message: string; variant: 'error' | 'success' | 'info' } | null>(null);
+
+  useEffect(() => {
+    if (!toast) return;
+    const timer = window.setTimeout(() => setToast(null), 4000);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
 
   useEffect(() => {
     loadHistory();
@@ -156,7 +164,7 @@ const History: React.FC = () => {
       await loadHistory();
     } catch (error) {
       console.error(HISTORY_LOG_MESSAGES.deleteFailure, error);
-      alert(HISTORY_ALERT_MESSAGES.deleteFailure);
+      setToast({ message: HISTORY_ALERT_MESSAGES.deleteFailure, variant: 'error' });
     }
   };
 
@@ -184,7 +192,7 @@ const History: React.FC = () => {
       await loadHistory();
     } catch (error) {
       console.error(HISTORY_LOG_MESSAGES.deleteFailure, error);
-      alert(HISTORY_ALERT_MESSAGES.deleteFailure);
+      setToast({ message: HISTORY_ALERT_MESSAGES.deleteFailure, variant: 'error' });
     }
   };
 
@@ -227,6 +235,12 @@ const History: React.FC = () => {
       initial="hidden"
       animate="visible"
     >
+      <AnimatePresence>
+        {toast && (
+          <Toast message={toast.message} variant={toast.variant} onClose={() => setToast(null)} />
+        )}
+      </AnimatePresence>
+
       <motion.div variants={itemVariants}>
         <HistoryHeader
           onBack={() => navigate(HISTORY_ROUTES.dashboard)}

@@ -16,6 +16,7 @@ type DashboardUploadSectionProps = {
   uploading: boolean;
   onProcessImage: (imageId: string, carCategory: CarCategory) => void;
   onUpload: (files: File[]) => void;
+  onToast: (toast: { message: string; variant: 'error' | 'success' | 'info' }) => void;
 };
 
 const DashboardUploadSection = ({
@@ -25,6 +26,7 @@ const DashboardUploadSection = ({
   uploading,
   onProcessImage,
   onUpload,
+  onToast,
 }: DashboardUploadSectionProps) => {
   const navigate = useNavigate();
   const [imageUrls, setImageUrls] = useState<Map<string, string>>(new Map());
@@ -113,11 +115,11 @@ const DashboardUploadSection = ({
         assessmentDate: new Date().toISOString(),
       });
 
-      alert('Assessment saved successfully!');
+      onToast({ message: 'Assessment saved successfully!', variant: 'success' });
       navigate('/history');
     } catch (error) {
       console.error('Failed to save assessment:', error);
-      alert('Failed to save assessment. Please try again.');
+      onToast({ message: 'Failed to save assessment. Please try again.', variant: 'error' });
     } finally {
       setSaving(new Set([...saving].filter(id => id !== imageId)));
     }
