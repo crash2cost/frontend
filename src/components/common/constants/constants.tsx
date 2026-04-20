@@ -8,7 +8,8 @@ export const API_ROUTES = {
 export const ROUTES = {
   LOGIN: '/login',
   SIGNUP: '/signup',
-  DASHBOARD: '/dashboard'
+  DASHBOARD: '/dashboard',
+  ADMIN: '/admin',
 };
 
 export const ERRORS = {

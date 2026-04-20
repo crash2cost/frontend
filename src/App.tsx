@@ -3,7 +3,8 @@ import Login from './pages/login/Login';
 import SignUp from './pages/signup/SignUp';
 import Dashboard from './pages/dashboard/Dashboard';
 import History from './pages/history/History';
-import { ProtectedRoute } from './components/guard';
+import Admin from './pages/admin/Admin';
+import { ProtectedRoute, AdminRoute } from './components/guard';
 
 function App() {
   return (
@@ -11,21 +12,29 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route 
-          path="/dashboard" 
+        <Route
+          path="/dashboard"
           element={
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
-          } 
+          }
         />
-        <Route 
-          path="/history" 
+        <Route
+          path="/history"
           element={
             <ProtectedRoute>
               <History />
             </ProtectedRoute>
-          } 
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <Admin />
+            </AdminRoute>
+          }
         />
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>
