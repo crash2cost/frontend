@@ -144,7 +144,9 @@ const Dashboard: React.FC = () => {
       <motion.div variants={itemVariants}>
         <DashboardHeader
           onGoToHistory={() => navigate('/history')}
+          onGoToAdmin={() => navigate('/admin')}
           onLogout={logout}
+          onToast={setToast}
         />
       </motion.div>
 

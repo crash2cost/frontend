@@ -56,7 +56,7 @@ const DashboardStats = ({
             <DollarSign size={22} />
           </div>
         </div>
-        <div className={styles.statValue}>₪{totalCost.toLocaleString()}</div>
+        <div className={styles.statValue}>${totalCost.toLocaleString()}</div>
         <div className={styles.statTrend} style={{ color: '#fbbf24' }}>
           <AlertTriangle size={16} />
           {totalLossCount} total loss cases

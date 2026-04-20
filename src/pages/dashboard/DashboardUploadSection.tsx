@@ -244,7 +244,7 @@ const DashboardUploadSection = ({
                         <div className={styles.costBox}>
                           <span className={styles.costLabel}>Total Repair Cost</span>
                           <span className={styles.costAmount}>
-                            ₪{assessment.totalCost.toLocaleString()}
+                            ${assessment.totalCost.toLocaleString()}
                           </span>
                         </div>
                       </div>
@@ -274,7 +274,7 @@ const DashboardUploadSection = ({
                                       Severity {damage.severity}/5
                                     </span>
                                     <span className={styles.partCost}>
-                                      ₪{damage.cost.toLocaleString()}
+                                      ${damage.cost.toLocaleString()}
                                     </span>
                                   </div>
                                 </div>

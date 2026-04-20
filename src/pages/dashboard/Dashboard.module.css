@@ -68,6 +68,31 @@
   font-weight: 500;
 }
 
+.adminButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow:
+    0 4px 15px -3px rgba(139, 92, 246, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.adminButton:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 25px -5px rgba(139, 92, 246, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+}
+
 .historyButton {
   display: flex;
   align-items: center;
@@ -81,7 +106,7 @@
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 
+  box-shadow:
     0 4px 15px -3px rgba(59, 130, 246, 0.4),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
@@ -91,6 +116,73 @@
   box-shadow: 
     0 8px 25px -5px rgba(59, 130, 246, 0.5),
     0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+}
+
+.adminAccessButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.adminAccessButton:hover {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.3);
+  color: #a78bfa;
+}
+
+.adminAccessForm {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow: hidden;
+}
+
+.adminAccessInput {
+  width: 160px;
+  padding: 0.6rem 0.875rem;
+  background: rgba(24, 24, 27, 0.8);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.adminAccessInput:focus {
+  border-color: rgba(139, 92, 246, 0.6);
+}
+
+.adminAccessInput::placeholder {
+  color: var(--text-tertiary);
+}
+
+.adminAccessSubmit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.adminAccessSubmit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .logoutButton {
