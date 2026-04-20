@@ -1,4 +1,4 @@
-import { ArrowLeft, Shield, User } from 'lucide-react';
+import { ArrowLeft, Shield, User, Search } from 'lucide-react';
 import { STORAGE_KEYS } from '../../constants/api.constants';
 import { getTokenUsername } from '../../utils/jwt';
 import styles from './History.module.css';
@@ -12,6 +12,8 @@ type HistoryHeaderProps = {
   totalSelectable: number;
   readOnly?: boolean;
   isAdmin?: boolean;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
 };
 
 const HistoryHeader = ({
@@ -22,6 +24,8 @@ const HistoryHeader = ({
   totalSelectable,
   readOnly = false,
   isAdmin = false,
+  searchQuery = '',
+  onSearchChange,
 }: HistoryHeaderProps) => {
   const hasSelection = selectedCount > 0;
   const allSelected = totalSelectable > 0 && selectedCount === totalSelectable;
@@ -50,6 +54,18 @@ const HistoryHeader = ({
         <h1 className={styles.title}>{HISTORY_TEXT.title}</h1>
         <p className={styles.subtitle}>{isAdmin ? HISTORY_TEXT.adminSubtitle : HISTORY_TEXT.subtitle}</p>
       </div>
+      {isAdmin && onSearchChange && (
+        <div className={styles.searchBar}>
+          <Search size={20} className={styles.searchIcon} />
+          <input
+            type="text"
+            className={styles.searchInput}
+            placeholder={HISTORY_TEXT.searchPlaceholder}
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+          />
+        </div>
+      )}
       {!readOnly && (
         <div className={styles.headerActions}>
           <button onClick={onToggleSelectAll} className={styles.selectAllButton} disabled={totalSelectable === 0}>

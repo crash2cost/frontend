@@ -41,6 +41,7 @@ export const HISTORY_TEXT = {
   adminEmptyTitle: 'No assessments in system',
   adminEmptyText: 'No damage assessments have been submitted yet',
   ownerLabel: 'Owner',
+  searchPlaceholder: 'Filter by username...',
 } as const;
 
 export const HISTORY_CLASS_KEYS = {

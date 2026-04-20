@@ -46,6 +46,7 @@ const History: React.FC = () => {
   const [selectedImageIds, setSelectedImageIds] = useState<Set<string>>(new Set());
   const [readOnly, setReadOnly] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [toast, setToast] = useState<{ message: string; variant: 'error' | 'success' | 'info' } | null>(null);
 
   useEffect(() => {
@@ -70,7 +71,7 @@ const History: React.FC = () => {
       setIsAdmin(isAdmin);
 
       if (isAdmin) {
-        const pageResponse = await reportApi.getAllDamageReports();
+        const pageResponse = await reportApi.getAllDamageReports(0, 100);
         reports = pageResponse.content;
         const imageMap = new Map<string, ImageResponse>();
         reports.forEach(report => {
@@ -224,9 +225,23 @@ const History: React.FC = () => {
     });
   };
 
-  const totalCost = Array.from(assessments.values()).reduce((sum, a) => sum + a.totalCost, 0);
-  const totalLossCount = Array.from(assessments.values()).filter(a => a.totalLoss).length;
-  const totalSelectable = uploadedImages.length;
+  // Filter by username when admin is searching
+  const filteredImages = isAdmin && searchQuery
+    ? uploadedImages.filter(img => {
+        const report = assessments.get(img.id);
+        return report?.username?.toLowerCase().includes(searchQuery.toLowerCase());
+      })
+    : uploadedImages;
+
+  const filteredAssessments = isAdmin && searchQuery
+    ? new Map(Array.from(assessments.entries()).filter(
+        ([, report]) => report.username?.toLowerCase().includes(searchQuery.toLowerCase())
+      ))
+    : assessments;
+
+  const totalCost = Array.from(filteredAssessments.values()).reduce((sum, a) => sum + a.totalCost, 0);
+  const totalLossCount = Array.from(filteredAssessments.values()).filter(a => a.totalLoss).length;
+  const totalSelectable = filteredImages.length;
 
   return (
     <motion.div
@@ -250,6 +265,8 @@ const History: React.FC = () => {
           totalSelectable={totalSelectable}
           readOnly={readOnly}
           isAdmin={isAdmin}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
         />
       </motion.div>
 
@@ -275,15 +292,15 @@ const History: React.FC = () => {
           >
             <motion.div variants={itemVariants}>
               <HistorySummary
-                totalAssessments={assessments.size}
+                totalAssessments={filteredAssessments.size}
                 totalCost={totalCost}
                 totalLossCount={totalLossCount}
               />
             </motion.div>
             <motion.div variants={itemVariants}>
               <HistoryGrid
-                uploadedImages={uploadedImages}
-                assessments={assessments}
+                uploadedImages={filteredImages}
+                assessments={filteredAssessments}
                 onDeleteAssessment={handleDeleteAssessment}
                 onToggleSelect={handleToggleSelect}
                 selectedReportIds={selectedImageIds}

@@ -97,6 +97,41 @@
   font-size: 1rem;
 }
 
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  background: rgba(24, 24, 27, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  width: 100%;
+  transition: border-color 0.2s ease;
+}
+
+.searchBar:focus-within {
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.searchIcon {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+.searchInput::placeholder {
+  color: var(--text-tertiary);
+}
+
 .headerActions {
   display: flex;
   gap: 0.75rem;
