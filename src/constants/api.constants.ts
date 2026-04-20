@@ -7,6 +7,7 @@ export const API_BASE_PATHS = {
   assessments: '/api/assessments',
   reports: '/api/reports',
   images: '/api/images',
+  admin: '/api/admin',
 };
 
 export const API_PATH_SEGMENTS = {

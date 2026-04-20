@@ -20,7 +20,7 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem(STORAGE_KEYS.authToken);
     const requestUrl = config.url ?? '';
-    const isAuthRequest = requestUrl.startsWith(API_BASE_PATHS.auth);
+    const isAuthRequest = requestUrl.startsWith(API_BASE_PATHS.auth) && !requestUrl.includes('admin-access');
     if (token && !isAuthRequest) {
       config.headers[HEADER_NAMES.authorization] = `${AUTH_SCHEME} ${token}`;
     }

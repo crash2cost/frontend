@@ -52,7 +52,7 @@ export const reportApi = {
     return response.data;
   },
 
-  async getAllDamageReports(page = 0, size = 100): Promise<PageResponse<DamageReport>> {
+  async getAllDamageReports(page = 0, size = 20): Promise<PageResponse<DamageReport>> {
     const response = await api.get<PageResponse<DamageReport>>(
       '/api/reports/damage-assessments/all',
       { params: { page, size } }
@@ -62,6 +62,10 @@ export const reportApi = {
 
   async deleteReport(reportId: string): Promise<void> {
     await api.delete(`/api/assessments/${reportId}`);
+  },
+
+  async adminDeleteReport(reportId: string): Promise<void> {
+    await api.delete(`/api/reports/admin/${reportId}`);
   },
 
   async deleteAllReports(): Promise<void> {
